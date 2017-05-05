@@ -190,12 +190,24 @@ public class EnemyPlane extends Rect
 			if (this.enemyType <= 6)
 			{
 				boom = new Boom(x + width / 2 - 40, y + height / 2 - 40, Boom.TYPE_BOOM_ENEMY_PLANE, gameView);
+				//有一定机率产生奖品
+				if (rand.nextInt(100) > 50)
+				{
+					Prize prize = new Prize(x + width / 2 - 15, y + height / 2 - 15, rand.nextInt(5) + 2, gameView);
+					gameView.prizeVector.add(prize);
+				}
 				//播放小飞机爆炸的声音
 				gameView.soundPool.play(Sound.enemyPlaneBoom);
 			}
 			else 
 			{
 				boom = new Boom(x + width / 2 - 150, y + height / 2 - 158, Boom.TYPE_BOOM_ENEMY_PLANE_BIG, gameView);
+				//大飞机产生奖品的机率更大
+				if (rand.nextInt(100) > 10)
+				{
+					Prize prize = new Prize(x + width / 2 - 15, y + height / 2 - 15, rand.nextInt(5) + 2, gameView);
+					gameView.prizeVector.add(prize);
+				}
 				//播放大飞机爆炸的声音
 				gameView.soundPool.play(Sound.rockBoom);
 			}

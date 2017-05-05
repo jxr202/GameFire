@@ -20,6 +20,7 @@ public class MediaPlayerUtil
 	private MediaPlayerUtil(Context context)
 	{
 		this.context = context;
+		this.mediaPlayer = null;
 	}
 	
 	/**
@@ -50,10 +51,7 @@ public class MediaPlayerUtil
 		}
 		try
 		{
-			if (mediaPlayer != null)
-			{
-				mediaPlayer.stop();
-			}
+			this.stop();
 			mediaPlayer = MediaPlayer.create(context, resId);
 			if (mediaPlayer != null)
 			{
@@ -82,6 +80,7 @@ public class MediaPlayerUtil
 		}
 		try
 		{
+			this.stop();
 			mediaPlayer = MediaPlayer.create(context, resId);
 			mediaPlayer.setLooping(true);
 			if (mediaPlayer != null)
@@ -95,6 +94,34 @@ public class MediaPlayerUtil
 		{
 			e.printStackTrace();
 			return;
+		}
+	}
+	
+	/**
+	 * 停止播放声音
+	 */
+	public void stop()
+	{
+		if (mediaPlayer != null && mediaPlayer.isPlaying())
+		{
+			mediaPlayer.stop();
+		}
+	}
+	
+	/**
+	 * 释放游戏资源
+	 */
+	public void release()
+	{
+		this.stop();
+		if (mediaPlayer != null)
+		{
+			mediaPlayer.release();
+			mediaPlayer = null;
+		}
+		if (instance != null)
+		{
+			instance = null;
 		}
 	}
 	

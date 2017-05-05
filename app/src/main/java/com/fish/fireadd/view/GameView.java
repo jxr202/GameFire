@@ -12,6 +12,7 @@ import com.fish.fireadd.bean.EnemyPlane;
 import com.fish.fireadd.bean.MyBullet;
 import com.fish.fireadd.bean.MyPlane;
 import com.fish.fireadd.bean.Boom;
+import com.fish.fireadd.bean.Prize;
 import com.fish.fireadd.bean.Rect;
 import com.fish.fireadd.bean.Tips;
 import com.fish.fireadd.constant.Constant;
@@ -59,11 +60,13 @@ public class GameView extends SurfaceView
 	public Bitmap bmpMyPlaneShield;
 	//玩家的子弹
 	public Bitmap bmpMyBulletBasic;
-	public Bitmap bmpMyBulletBasicBack;
-	public Bitmap bmpMyBulletDouble;
-	public Bitmap bmpMyBulletDoubleBack;
-	public Bitmap bmpMyBulletPower;
-	public Bitmap bmpMyBulletPowerN;	
+	public Bitmap bmpMyBulletS;
+	public Bitmap bmpMyBulletSLeft;
+	public Bitmap bmpMyBulletSRight;
+	public Bitmap bmpMyBulletF;
+	public Bitmap bmpMyBulletL;
+	public Bitmap bmpMyBulletLLeft;
+	public Bitmap bmpMyBulletLRight;
 	//玩家飞机爆炸
 	public Bitmap[] bmpMyPlaneBoom;
 	//玩家罩子爆炸
@@ -114,9 +117,14 @@ public class GameView extends SurfaceView
 	public Bitmap bmpBoss1;
 	public Bitmap bmpBoss2;
 	public Bitmap bmpBoss3;
-
 	//游戏开始和结束的提示
 	public Bitmap bmpTips[];
+	//游戏中的奖品
+	public Bitmap bmpPrizeLight;
+	public Bitmap bmpPrizeP;
+	public Bitmap bmpPrizeS;
+	public Bitmap bmpPrizeF;
+	public Bitmap bmpPrizeL;
 	
 	public boolean gameOver = false;	//线程开关
 	public boolean isBossLive = false;	//创建敌机开关
@@ -130,6 +138,7 @@ public class GameView extends SurfaceView
 	public Vector<EnemyPlane> enemyPlaneVector = new Vector<EnemyPlane>();
 	public Vector<EnemyBullet> enemyBulletVector = new Vector<EnemyBullet>();
 	public Vector<Boom> boomVector = new Vector<Boom>();	
+	public Vector<Prize> prizeVector = new Vector<Prize>();	
 	
 //	private int enemyArray[][] = {
 //			{4, 7, 4, 2, 1, 2, 1, 1}, {8, 2, 1, 2, 4, 2, 4, 1}, {4, 9, 1, 2, 1, 4, 1, 4},{8, 4}, {4, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
@@ -140,12 +149,12 @@ public class GameView extends SurfaceView
 //	};
 	
 	public int enemyArrayIndex = 0;
-	private int createEnemyTime = 150;
+	private int createEnemyTime = 100;
 	private int createEnemyCount = 0;
 	private Random random;
 	
 	
-	Random rand = new Random();
+	public Random rand = new Random();
 	
 	public int gameScore = 0;
 	public int life = 3;
@@ -157,8 +166,15 @@ public class GameView extends SurfaceView
 	
 	
 	public int enemyArrayData[][][] = {
-			{{1}, {-1}},
+			{{4, 1, 1}, {4, 1}, {1, 2}, {4}, {4, 5}, {2, 3}, {5, 6}, {3, 3}, {5, 2, 2},
+			{4, 2}, {4, 3}, {1, 5},{4, 4}, {4, 6}, {4, 3}, {4, 4}, {4, 3}, {4, 5, 6},
+			{7}, {}, {}, {}, {4, 3}, {4, 5}, {4, 4}, {4, 6},  {3, 3}, {5, 2, 4},
+			{8}, {}, {}, {}, {1, 4}, {4, 3}, {1, 5}, {1, 4}, {1, 3}, {2, 3}, {4, 5}, 
+			{9}, {}, {}, {}, {3, 3}, {5, 2}, {1, 4}, {1, 3}, {1, 5},{1, 4}, {1, 7}, 
+			{4, 3}, {5, 7}, {3, 3}, {5, 1}},
+			
 			{{2}, {3}, {-1}},
+			
 			{{4}, {5}, {6}, {-1}}
 	};
 	public int enemyArray[][] = enemyArrayData[0];
@@ -195,16 +211,18 @@ public class GameView extends SurfaceView
 		bmpMyPlaneLeft = BitmapFactory.decodeResource(res, R.drawable.my_plane_left);
 		bmpMyPlaneRight = BitmapFactory.decodeResource(res, R.drawable.my_plane_right);
 		bmpMyPlaneLight = BitmapFactory.decodeResource(res, R.drawable.my_plane_light);
-		bmpMyPlaneLightLeft = BitmapFactory.decodeResource(res, R.drawable.my_plane_light_left);
-		bmpMyPlaneLightRight = BitmapFactory.decodeResource(res, R.drawable.my_plane_light_right);
+		bmpMyPlaneLightLeft = BitmapFactory.decodeResource(res, R.drawable.my_plane_left_light);
+		bmpMyPlaneLightRight = BitmapFactory.decodeResource(res, R.drawable.my_plane_right_light);
 		bmpMyPlaneShield = BitmapFactory.decodeResource(res, R.drawable.my_plane_shield);
 		//玩家的子弹
 		bmpMyBulletBasic = BitmapFactory.decodeResource(res, R.drawable.my_bullet_basic);
-		bmpMyBulletBasicBack = BitmapFactory.decodeResource(res, R.drawable.my_bullet_basic_back);
-		bmpMyBulletDouble = BitmapFactory.decodeResource(res, R.drawable.my_bullet_double);
-		bmpMyBulletDoubleBack = BitmapFactory.decodeResource(res, R.drawable.my_bullet_double_back);
-		bmpMyBulletPower = BitmapFactory.decodeResource(res, R.drawable.my_bullet_power);
-		bmpMyBulletPowerN = BitmapFactory.decodeResource(res, R.drawable.my_bullet_power_n);
+		bmpMyBulletS = BitmapFactory.decodeResource(res, R.drawable.my_bullet_s);
+		bmpMyBulletSLeft = BitmapFactory.decodeResource(res, R.drawable.my_bullet_s_left);
+		bmpMyBulletSRight = BitmapFactory.decodeResource(res, R.drawable.my_bullet_s_right);
+		bmpMyBulletF = BitmapFactory.decodeResource(res, R.drawable.my_bullet_f);
+		bmpMyBulletL = BitmapFactory.decodeResource(res, R.drawable.my_bullet_l);
+		bmpMyBulletLLeft = BitmapFactory.decodeResource(res, R.drawable.my_bullet_l_left);
+		bmpMyBulletLRight = BitmapFactory.decodeResource(res, R.drawable.my_bullet_l_right);
 		//玩家飞机爆炸
 		bmpMyPlaneBoom = new Bitmap[30];
 		bmpMyPlaneBoom[0] = BitmapFactory.decodeResource(res, R.drawable.plane_explode00);
@@ -349,12 +367,19 @@ public class GameView extends SurfaceView
 		bmpBoss1 = BitmapFactory.decodeResource(res, R.drawable.boss_1);
 		bmpBoss2 = BitmapFactory.decodeResource(res, R.drawable.boss_2);
 		bmpBoss3 = BitmapFactory.decodeResource(res, R.drawable.boss_3);
-		
+		//游戏提示的图片
 		bmpTips = new Bitmap[4];
 		bmpTips[0] = BitmapFactory.decodeResource(res, R.drawable.tips_game_start);
 		bmpTips[1] = BitmapFactory.decodeResource(res, R.drawable.tips_game_over);
 		bmpTips[2] = BitmapFactory.decodeResource(res, R.drawable.tips_game_pass);
 		bmpTips[3] = BitmapFactory.decodeResource(res, R.drawable.tips_game_pass_all);
+		//游戏奖品的图片
+		bmpPrizeLight = BitmapFactory.decodeResource(res, R.drawable.prize_light);
+		bmpPrizeP = BitmapFactory.decodeResource(res, R.drawable.prize_p);
+		bmpPrizeS = BitmapFactory.decodeResource(res, R.drawable.prize_s);
+		bmpPrizeF = BitmapFactory.decodeResource(res, R.drawable.prize_f);
+		bmpPrizeL = BitmapFactory.decodeResource(res, R.drawable.prize_l);
+		
 		
 		random = new Random();
 		myPlane = new MyPlane(240, 600, this);
@@ -424,6 +449,14 @@ public class GameView extends SurfaceView
 				}
 			}
 			
+			for(Prize prize : prizeVector)	//画奖品
+			{
+				if(prize.live)
+				{
+					prize.draw(canvas, paint);
+				}
+			}
+			
 			//游戏中的提示,包括游戏开始和游戏结束
 			tips.draw(canvas, paint);
 			//
@@ -432,7 +465,7 @@ public class GameView extends SurfaceView
 			paint.setColor(Color.YELLOW);
 			canvas.drawText("当前关数:" + this.level, 1, 15, paint);
 			canvas.drawText("游戏得分:" + this.gameScore, 1, 30, paint);
-			canvas.drawText("生命条数:" + this.life, 1, 45, paint);
+			//canvas.drawText("生命条数:" + this.life, 1, 45, paint);
 			
 			holder.unlockCanvasAndPost(canvas);
 		}
@@ -460,6 +493,8 @@ public class GameView extends SurfaceView
 		this.doRectLogic(enemyBulletVector);
 		//爆炸的逻辑处理
 		this.doRectLogic(boomVector);
+		//奖品的逻辑处理
+		this.doRectLogic(prizeVector);
 		
 		//Boss的逻辑处理
 		if (isBossLive)
@@ -602,7 +637,7 @@ public class GameView extends SurfaceView
 	public boolean onTouchEvent(MotionEvent event)
 	{
 		this.step ++;
-		if (step >= 5)
+		if (step >= 7)
 		{
 			myPlane.fire();
 			step = 0;

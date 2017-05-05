@@ -10,17 +10,25 @@ import android.graphics.Paint;
 public class MyBullet extends Rect
 {
 	
-	public static final int TYPE_BULLET_BASIC = 1;
-	public static final int TYPE_BULLET_BASIC_BACK = 2;
-	public static final int TYPE_BULLET_DOUBLE = 3;
-	public static final int TYPE_BULLET_DOUBLE_BACK = 4;
-	public static final int TYPE_BULLET_POWER = 5;
-	public static final int TYPE_BULLET_POWER_N = 6;
+	public static final int MY_BULLET_BASIC = 1;
+	public static final int MY_BULLET_S = 2;
+	public static final int MY_BULLET_S_LEFT = 3;
+	public static final int MY_BULLET_S_RIGHT = 4;
+	public static final int MY_BULLET_F = 5;
+	public static final int MY_BULLET_L = 6;
+	public static final int MY_BULLET_L_LEFT = 7;
+	public static final int MY_BULLET_L_RIGHT = 8;
 	
 	public int bulletType = 1;
 	private Bitmap bmpMyBullet;
-	private int speed = 10;
+	private int speed = 8;
 	private GameView gameView;
+	
+	private double rad;	//微型跟踪子弹的弧度
+	
+	//F型子弹的播放帧数
+	private int totalFrame = 8;
+	private int currFrame = 0;
 	
 	public MyBullet(int x, int y, int bulletType, GameView gameView)
 	{
@@ -29,26 +37,40 @@ public class MyBullet extends Rect
 		this.gameView = gameView;
 		switch (bulletType)
 		{
-		case TYPE_BULLET_BASIC:
+		case MY_BULLET_BASIC:
 			this.bmpMyBullet = gameView.bmpMyBulletBasic;
 			break;
-		case TYPE_BULLET_BASIC_BACK:
-			this.bmpMyBullet = gameView.bmpMyBulletBasicBack;
+		case MY_BULLET_S:
+			this.bmpMyBullet = gameView.bmpMyBulletS;
 			break;
-		case TYPE_BULLET_DOUBLE:
-			this.bmpMyBullet = gameView.bmpMyBulletDouble;
+		case MY_BULLET_S_LEFT:
+			this.bmpMyBullet = gameView.bmpMyBulletSLeft;
+			this.rad = Math.PI * 3 / 4;
 			break;
-		case TYPE_BULLET_DOUBLE_BACK:
-			this.bmpMyBullet = gameView.bmpMyBulletDoubleBack;
+		case MY_BULLET_S_RIGHT:
+			this.bmpMyBullet = gameView.bmpMyBulletSRight;
+			this.rad = Math.PI / 4;
 			break;
-		case TYPE_BULLET_POWER:
-			this.bmpMyBullet = gameView.bmpMyBulletPower;
+		case MY_BULLET_F:
+			this.bmpMyBullet = gameView.bmpMyBulletF;
+			//F子弹的移动速度快一些
+			//this.speed = 15;
 			break;
-		case TYPE_BULLET_POWER_N:
-			this.bmpMyBullet = gameView.bmpMyBulletPowerN;
+		case MY_BULLET_L:
+			this.bmpMyBullet = gameView.bmpMyBulletL;
+			break;
+		case MY_BULLET_L_LEFT:
+			this.bmpMyBullet = gameView.bmpMyBulletLLeft;
+			break;
+		case MY_BULLET_L_RIGHT:
+			this.bmpMyBullet = gameView.bmpMyBulletLRight;
 			break;
 		}
 		this.width = bmpMyBullet.getWidth();
+		if (bulletType == MY_BULLET_F)
+		{
+			width = width / totalFrame;
+		}
 		this.height = bmpMyBullet.getHeight();
 		this.live = true;
 		//子弹创建时播放声音
@@ -62,12 +84,29 @@ public class MyBullet extends Rect
 	 */
 	public void draw(Canvas canvas, Paint paint)
 	{
+		if (bulletType == MY_BULLET_F)
+		{
+			canvas.save();	//在设置剪裁区域前保存canvas
+			canvas.clipRect(x, y, x + width, y + height);	//设置剪裁区域
+			canvas.drawBitmap(bmpMyBullet, x - currFrame * width, y, paint);
+			canvas.restore();
+			return;
+		}
 		canvas.drawBitmap(bmpMyBullet, x, y, paint);
 	}
 	
 	public void move()
 	{
 		this.y -= this.speed;
+	}
+	
+	/**
+	 * 增强版子弹的移动
+	 */
+	public void move(double rad)
+	{
+		this.x += this.speed * Math.cos(rad);
+		this.y -= this.speed * Math.sin(rad);
 	}
 	
 	/**
@@ -117,7 +156,14 @@ public class MyBullet extends Rect
 	public void doLogic()
 	{
 		this.hitEnemyPlane();
-		this.move();
+		if (this.rad != 0)
+		{
+			this.move(rad);
+		}
+		else 
+		{
+			this.move();
+		}
 		if (this.x < 0 || this.x > 480)
 		{
 			this.live = false;
@@ -125,6 +171,18 @@ public class MyBullet extends Rect
 		if(this.y + this.height <= 0 || this.y > 800)
 		{
 			this.live = false;
+		}
+		//如果是F型子弹，则进行相关的自转
+		if (bulletType == MY_BULLET_F)
+		{
+			if (currFrame < totalFrame)
+			{
+				currFrame ++;
+			}
+			else 
+			{
+				currFrame = 0;
+			}
 		}
 	}
 	

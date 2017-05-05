@@ -11,7 +11,7 @@ public class MyPlane extends Rect
 {
 
 	private int noCollisionCount = 0;	//无敌计时器
-	private int noCollisionTime = 10;	//因为无敌时间
+	private int noCollisionTime = 50;	//因为无敌时间
 	public boolean unBeatable;
 	
 	public Bitmap bmpMyPlane;
@@ -72,6 +72,7 @@ public class MyPlane extends Rect
 	{
 		if (pointX - this.x <= -2)
 		{
+			System.out.println("left..., is unBeatable ? " + unBeatable);
 			if (unBeatable)
 			{
 				bmpMyPlane = gameView.bmpMyPlaneLightLeft;
@@ -83,8 +84,10 @@ public class MyPlane extends Rect
 		}
 		else if (pointX - this.x >= 2)
 		{
+			System.out.println("right..., is unBeatable ? " + unBeatable);
 			if (unBeatable)
 			{
+				System.out.println("---------------------------------------");
 				bmpMyPlane = gameView.bmpMyPlaneLightRight;
 			}
 			else 
@@ -94,6 +97,7 @@ public class MyPlane extends Rect
 		}
 		else 
 		{
+			System.out.println("not move..., is unBeatable ? " + unBeatable);
 			if (unBeatable)
 			{
 				bmpMyPlane = gameView.bmpMyPlaneLight;
@@ -136,10 +140,41 @@ public class MyPlane extends Rect
 	 */
 	public void fire()
 	{
-		if (this.live)
+		if (!live)
+		{
+			return;
+		}
+		//根据不同的子弹类型创建子弹
+		switch (myBulletType)
+		{
+		case MyBullet.MY_BULLET_BASIC:
 		{
 			MyBullet bullet = new MyBullet(this.x + width / 2 - gameView.bmpMyBulletBasic.getWidth() / 2, this.y, myBulletType, gameView);
 			gameView.bulletVector.add(bullet);
+			break;
+		}
+		case MyBullet.MY_BULLET_S:
+		{
+			MyBullet bullet = new MyBullet(this.x + width / 2 - gameView.bmpMyBulletS.getWidth() / 2, this.y, MyBullet.MY_BULLET_S, gameView);
+			MyBullet bulletLeft = new MyBullet(this.x + width / 2 - gameView.bmpMyBulletS.getWidth() / 2, this.y, MyBullet.MY_BULLET_S_LEFT, gameView);
+			MyBullet bulletRight = new MyBullet(this.x + width / 2 - gameView.bmpMyBulletS.getWidth() / 2, this.y, MyBullet.MY_BULLET_S_RIGHT, gameView);
+			gameView.bulletVector.add(bullet);
+			gameView.bulletVector.add(bulletLeft);
+			gameView.bulletVector.add(bulletRight);
+			break;
+		}
+		case MyBullet.MY_BULLET_F:
+		{
+			MyBullet bullet = new MyBullet(this.x + width / 2 - gameView.bmpMyBulletF.getWidth() / 16, this.y, MyBullet.MY_BULLET_F, gameView);
+			gameView.bulletVector.add(bullet);
+			break;
+		}
+		case MyBullet.MY_BULLET_L:
+		{
+			MyBullet bullet = new MyBullet(this.x + width / 2 - gameView.bmpMyBulletL.getWidth() / 2, this.y, MyBullet.MY_BULLET_L, gameView);
+			gameView.bulletVector.add(bullet);
+			break;
+		}
 		}
 	}
 	

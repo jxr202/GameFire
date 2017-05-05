@@ -125,12 +125,18 @@ public class EnemyBullet extends Rect
 		MyPlane plane = gameView.myPlane;
 		if (!live || plane.unBeatable || !plane.live)
 		{
+			this.live = false;
 			return;
 		}
 		
 		if (plane.shield.live)
 		{
-			if (this.hitOtherRect(plane))
+			//在有罩子的情况下，飞机的矩形模型
+			Rect rect = new Rect(plane.x + 4, plane.y + 15);
+			rect.width = 62;
+			rect.height = 45;
+			
+			if (this.hitOtherRect(rect))
 			{
 				this.live = false;
 				gameView.myPlane.shield.live = false;
@@ -145,7 +151,8 @@ public class EnemyBullet extends Rect
 		}
 		else 
 		{
-			Rect rect = new Rect(plane.x + 16, plane.y + 10);
+			//没有罩子的情况下，飞机的矩形模型
+			Rect rect = new Rect(plane.x + 16, plane.y + 20);
 			rect.width = 38;
 			rect.height = 40;
 			if (this.hitOtherRect(rect))
