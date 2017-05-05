@@ -1,7 +1,6 @@
 package com.fish.fireadd.bean;
 
 import java.util.Random;
-import java.util.Vector;
 
 import com.fish.fireadd.constant.Constant;
 import com.fish.fireadd.view.GameView;
@@ -12,39 +11,44 @@ import android.graphics.Paint;
 
 public class Boss extends Rect
 {
-	private int bossType;
-	private Bitmap bmpBoss;
-	private int speed = 5;
-	public int leftValue;
 	
-	private GameView gameView;
+	private static final int BOSS_1 = 10;
+	private static final int BOSS_2 = 11;
+	private static final int BOSS_3 = 12;
+	
+	public int bossType;
+	public Bitmap bmpBoss;
+	public int speed;
+	public int score;
+	public int lifeValue;	//敌机现在的生命值
+	
+	public GameView gameView;
+	
+	private int step = 0;	//用于调整BOSS的移动
+	
 	private static Random rand = new Random();
-	
-	private int step = 0;
-	
 	
 	public Boss(int x, int y, int bossType, GameView gameView)
 	{
 		super(x, y);
 		this.bossType = bossType;
 		this.gameView = gameView;
-		switch (bossType) {
-		case 1:
+		switch (bossType) 
+		{
+		case BOSS_1:
 			this.bmpBoss = gameView.bmpBoss1;
 			break;
-		case 2:
+		case BOSS_2:
 			this.bmpBoss = gameView.bmpBoss2;
 			break;
-		case 3:
+		case BOSS_3:
 			this.bmpBoss = gameView.bmpBoss3;
-			break;
-		case 4:
-			this.bmpBoss = gameView.bmpBoss4;
 			break;
 		}
 		this.width = bmpBoss.getWidth();
 		this.height = bmpBoss.getHeight();
-		this.leftValue = 1000;
+		this.lifeValue = 100;
+		this.speed = 4;
 		this.live = true;
 	}
 	
@@ -64,15 +68,23 @@ public class Boss extends Rect
 	public void move()
 	{
 		this.step ++;
-		if (this.step != 5)
+		if (this.step != 10)
 		{
 			return;
 		}
-		double rad = Math.PI * 2 * Math.random() - Math.PI;
-		this.x += this.speed * Math.cos(rad);
-		this.y += this.speed * Math.sin(rad);
 		this.step = 0;
 		
+		//BOSS的左右移动
+		if (Math.random() >= 0.5)
+		{
+			this.x += this.speed;
+		} 
+		else 
+		{
+			this.x -= this.speed;
+		}
+		
+		//BOSS的出界出处理
 		if (this.x <= 0)
 		{
 			this.x = 0;
@@ -81,47 +93,27 @@ public class Boss extends Rect
 		{
 			this.x = Constant.WIDTH - width;
 		}
-		else if (this.y <= 10)
-		{
-			this.y = 10;
-		}
-		else if (this.y >= Constant.HEIGHT - Constant.YG_HEIGHT)
-		{
-			this.y = Constant.HEIGHT - Constant.YG_HEIGHT;
-		}
 	}
 	
 	/**
-	 * BOSS开火,一次发五粒
+	 * BOSS的开火,全是跟踪子弹
 	 */
 	public void fire()
 	{
-
+		EnemyBullet bullet= new EnemyBullet(x + width / 2 - 10, 190, bossType, gameView);
+		gameView.enemyBulletVector.add(bullet);
 	}
-	
+
 	/**
 	 * BOSS的逻辑处理
 	 */
 	public void doLogic()
 	{
 		this.move();
-		if (this.rand.nextInt(100) > 80)
+		if (rand.nextInt(100) > 80)
 		{
 			this.fire();
 		}
-	}
-	
-	/**
-	 * 判断是否击中Boss,只有击中BOSS的头才算击中
-	 * @param rect 玩家的子弹
-	 * @return 是否击中BOSS的头部
-	 */
-	public boolean isHitted(Rect rect)
-	{
-		Rect bossRect = new Rect(this.x + this.width / 2 - 20, this.y + this.height - 20);
-		bossRect.width = 40;
-		bossRect.height = 20;
-		return rect.hitOtherRect(bossRect);
 	}
 	
 }

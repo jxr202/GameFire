@@ -6,13 +6,13 @@ import java.util.Vector;
 import com.fish.fireadd.activity.MainActivity;
 import com.fish.fireadd.activity.R;
 import com.fish.fireadd.bean.BackGround;
-import com.fish.fireadd.bean.Boss;
 import com.fish.fireadd.bean.EnemyBullet;
 import com.fish.fireadd.bean.EnemyPlane;
 import com.fish.fireadd.bean.MyBullet;
 import com.fish.fireadd.bean.MyPlane;
 import com.fish.fireadd.bean.Boom;
 import com.fish.fireadd.bean.Rect;
+import com.fish.fireadd.bean.Tips;
 import com.fish.fireadd.constant.Constant;
 
 import android.content.res.Resources;
@@ -96,28 +96,31 @@ public class GameView extends SurfaceView
 	public Bitmap bmpEnemyBulletBig1;
 	public Bitmap bmpEnemyBulletBig2;
 	public Bitmap bmpEnemyBulletBig3;
+	public Bitmap bmpEnemyBulletBoss1;
+	public Bitmap bmpEnemyBulletBoss2;
+	public Bitmap bmpEnemyBulletBoss3;
 	//敌机的爆炸
 	public Bitmap[] bmpEnemyBoom;
 	//大型敌机的爆炸
 	public Bitmap[] bmpEnemyBoomBig;
 	//加强版的大型敌机的爆炸
 	public Bitmap[] bmpEnemyBoomBigN;
-	
-	
-	
-	
+	//BOSS的图片
 	public Bitmap bmpBoss1;
 	public Bitmap bmpBoss2;
 	public Bitmap bmpBoss3;
-	public Bitmap bmpBoss4;
-	public Bitmap bmpBoom;
+
+	//游戏开始和结束的提示
+	public Bitmap bmpTips[];
 	
-	private boolean gameOver = false;
+	public boolean gameOver = false;
 	private boolean isBossLive = false;
 	
 	public BackGround backGround;
 	public MyPlane myPlane;
-	public Boss boss;
+	//public BossOld boss;
+	public Tips tips;
+	
 	public Vector<MyBullet> bulletVector = new Vector<MyBullet>();
 	public Vector<EnemyPlane> enemyPlaneVector = new Vector<EnemyPlane>();
 	public Vector<EnemyBullet> enemyBulletVector = new Vector<EnemyBullet>();
@@ -264,6 +267,9 @@ public class GameView extends SurfaceView
 		bmpEnemyBulletBig1 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_big1);
 		bmpEnemyBulletBig2 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_big2);
 		bmpEnemyBulletBig3 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_big3);
+		bmpEnemyBulletBoss1 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_boss1);
+		bmpEnemyBulletBoss2 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_boss2);
+		bmpEnemyBulletBoss3 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_boss3);
 		//敌人飞机的爆炸
 		bmpEnemyBoom = new Bitmap[7];
 		bmpEnemyBoom[0] = BitmapFactory.decodeResource(res, R.drawable.enemy_explode00);
@@ -324,20 +330,21 @@ public class GameView extends SurfaceView
 //		bmpEnemyBoomBigN[21] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion21);
 //		bmpEnemyBoomBigN[22] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion22);
 //		bmpEnemyBoomBigN[23] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion23);
+		//BOSS的图片
+		bmpBoss1 = BitmapFactory.decodeResource(res, R.drawable.boss_1);
+		bmpBoss2 = BitmapFactory.decodeResource(res, R.drawable.boss_2);
+		bmpBoss3 = BitmapFactory.decodeResource(res, R.drawable.boss_3);
 		
-		
-//		bmpEnemy7 = BitmapFactory.decodeResource(res, R.drawable.enemy_7);
-//		bmpBoss1 = BitmapFactory.decodeResource(res, R.drawable.boss_1);
-//		bmpBoss2 = BitmapFactory.decodeResource(res, R.drawable.boss_2);
-//		bmpBoss3 = BitmapFactory.decodeResource(res, R.drawable.boss_3);
-//		bmpBoss4 = BitmapFactory.decodeResource(res, R.drawable.boss_4);
-//		bmpBoom = BitmapFactory.decodeResource(res, R.drawable.boom);
+		bmpTips = new Bitmap[2];
+		bmpTips[0] = BitmapFactory.decodeResource(res, R.drawable.game_start);
+		bmpTips[1] = BitmapFactory.decodeResource(res, R.drawable.game_over);
 		
 		random = new Random();
 		myPlane = new MyPlane(240, 600, this);
 		Boom myPlaneBoom = new Boom(240, 50, Boom.TYPE_BOOM_MY_PLANE, this);
 		boomVector.add(myPlaneBoom);
 		backGround = new BackGround(bmpBackGround, this);
+		tips = new Tips(width / 2 - 251, height / 2 - 52, Tips.TIPS_START, this);
 	}
 	
 	/**
@@ -371,14 +378,14 @@ public class GameView extends SurfaceView
 			}
 			
 				
-			if (this.isBossLive)	//画BOSS
-			{
-				boss.draw(canvas, paint);
-				paint.setColor(Color.YELLOW);
-				canvas.drawText("Boss血量:" + boss.leftValue + "/1000", 200, 15, paint);
-				paint.setColor(Color.RED);
-				canvas.drawRect(200, 20, 200 + boss.leftValue / 5, 35, paint);
-			}
+//			if (this.isBossLive)	//画BOSS
+//			{
+//				boss.draw(canvas, paint);
+//				paint.setColor(Color.YELLOW);
+//				canvas.drawText("Boss血量:" + boss.leftValue + "/1000", 200, 15, paint);
+//				paint.setColor(Color.RED);
+//				canvas.drawRect(200, 20, 200 + boss.leftValue / 5, 35, paint);
+//			}
 			
 			Log.i("gameView", "enemyPlane.size = " + enemyPlaneVector.size());
 			for(EnemyPlane plane : enemyPlaneVector)	//画敌人飞机
@@ -402,7 +409,7 @@ public class GameView extends SurfaceView
 			}
 			
 			//游戏中的提示,包括游戏开始和游戏结束
-			//
+			tips.draw(canvas, paint);
 			//
 			
 			//让文字在飞机的上面
@@ -422,6 +429,10 @@ public class GameView extends SurfaceView
 	{
 		//背景图片的逻辑处理
 		backGround.doLogic();
+		//玩家飞机的逻辑处理
+		myPlane.doLogic();
+		//提示的逻辑处理
+		tips.doLogic();
 		
 		//子弹出界的逻辑处理
 		this.doRectLogic(bulletVector);
@@ -518,8 +529,12 @@ public class GameView extends SurfaceView
 	 */
 	public void gameOver()
 	{
-		gameOver = true;
-		activity.hd.sendEmptyMessage(Constant.GAME_OVER);
+		//gameOver = true;
+		Log.i("GameView", "GAME OVER.....");
+		//游戏结束将产生结束的提示
+		tips = new Tips(width / 2 - 243, -10, Tips.TIPS_END, this);
+		
+		//activity.hd.sendEmptyMessage(Constant.GAME_OVER);
 	}
 	
 	@Override

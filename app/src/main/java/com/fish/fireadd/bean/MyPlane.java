@@ -30,7 +30,7 @@ public class MyPlane extends Rect
 		this.width = bmpMyPlane.getWidth();
 		this.height = bmpMyPlane.getHeight();
 		this.live = true;
-		
+		this.unBeatable = false;
 		this.shield = new MyPlaneShield(x, y, gameView);
 	}
 
@@ -45,7 +45,7 @@ public class MyPlane extends Rect
 		{
 			return;
 		}
-		//
+		
 		
 		if (unBeatable)
 		{
@@ -140,18 +140,12 @@ public class MyPlane extends Rect
 		gameView.bulletVector.add(bullet);
 	}
 	
-	
+	/**
+	 * 被放弃的方法
+	 */
 	public void hitEnemyBullet()
 	{
 		
-	}
-	
-	public void gameOverCheck()
-	{
-		if (this.live = false)
-		{
-			gameView.gameOver();
-		}
 	}
 	
 	/**
@@ -169,9 +163,6 @@ public class MyPlane extends Rect
 			}
 		}
 		
-		this.shield.doLogic();
-		
-		gameOverCheck();
 	}
 	
 

@@ -10,15 +10,18 @@ import android.graphics.Paint;
 public class EnemyBullet extends Rect
 {
 
-	public static final int TYPE_BULLET_1 = 1;
-	public static final int TYPE_BULLET_2 = 2;
-	public static final int TYPE_BULLET_3 = 3;
-	public static final int TYPE_BULLET_4 = 4;
-	public static final int TYPE_BULLET_5 = 5;
-	public static final int TYPE_BULLET_6 = 6;
-	public static final int TYPE_BULLET_BIG_1 = 7;
-	public static final int TYPE_BULLET_BIG_2 = 8;
-	public static final int TYPE_BULLET_BIG_3 = 9;
+	public static final int ENEMY_BULLET_1 = 1;
+	public static final int ENEMY_BULLET_2 = 2;
+	public static final int ENEMY_BULLET_3 = 3;
+	public static final int ENEMY_BULLET_4 = 4;
+	public static final int ENEMY_BULLET_5 = 5;
+	public static final int ENEMY_BULLET_6 = 6;
+	public static final int ENEMY_BULLET_BIG_1 = 7;
+	public static final int ENEMY_BULLET_BIG_2 = 8;
+	public static final int ENEMY_BULLET_BIG_3 = 9;
+	public static final int ENEMY_BULLET_BOSS_1 = 10;
+	public static final int ENEMY_BULLET_BOSS_2 = 11;
+	public static final int ENEMY_BULLET_BOSS_3 = 12;
 	
 	private int bulletType;
 	private Bitmap bmpBullet;
@@ -36,40 +39,53 @@ public class EnemyBullet extends Rect
 		this.gameView = gameView;
 		switch (bulletType) 
 		{
-		case TYPE_BULLET_1:
+		case ENEMY_BULLET_1:
 			this.bmpBullet = gameView.bmpEnemyBullet1;
 			break;
-		case TYPE_BULLET_2:
+		case ENEMY_BULLET_2:
 			this.bmpBullet = gameView.bmpEnemyBullet2;
 			break;
-		case TYPE_BULLET_3:
+		case ENEMY_BULLET_3:
 			this.bmpBullet = gameView.bmpEnemyBullet3;
 			break;
-		case TYPE_BULLET_4:
+		case ENEMY_BULLET_4:
 			this.bmpBullet = gameView.bmpEnemyBullet4;
 			this.rad = gameView.getRad(x + 5, y + 5, gameView.myPlane.x + 27, gameView.myPlane.y - 30);
 			break;
-		case TYPE_BULLET_5:
+		case ENEMY_BULLET_5:
 			this.bmpBullet = gameView.bmpEnemyBullet5;
 			break;
-		case TYPE_BULLET_6:
+		case ENEMY_BULLET_6:
 			this.bmpBullet = gameView.bmpEnemyBullet6;
 			this.rad = gameView.getRad(x + 5, y + 5, gameView.myPlane.x + 27, gameView.myPlane.y - 30);
 			break;
-		case TYPE_BULLET_BIG_1:
+		case ENEMY_BULLET_BIG_1:
 			this.bmpBullet = gameView.bmpEnemyBulletBig1;
 			break;
-		case TYPE_BULLET_BIG_2:
+		case ENEMY_BULLET_BIG_2:
 			this.bmpBullet = gameView.bmpEnemyBulletBig2;
 			break;
-		case TYPE_BULLET_BIG_3:
+		case ENEMY_BULLET_BIG_3:
 			this.bmpBullet = gameView.bmpEnemyBulletBig3;
+			break;
+		case ENEMY_BULLET_BOSS_1:
+			this.bmpBullet = gameView.bmpEnemyBulletBoss1;
+			this.rad = gameView.getRad(x + 10, y + 10, gameView.myPlane.x + 27, gameView.myPlane.y - 30);
+			break;
+		case ENEMY_BULLET_BOSS_2:
+			this.bmpBullet = gameView.bmpEnemyBulletBoss2;
+			this.rad = gameView.getRad(x + 10, y + 10, gameView.myPlane.x + 27, gameView.myPlane.y - 30);
+			break;
+		case ENEMY_BULLET_BOSS_3:
+			this.bmpBullet = gameView.bmpEnemyBulletBoss3;
+			this.rad = gameView.getRad(x + 10, y + 10, gameView.myPlane.x + 27, gameView.myPlane.y - 30);
 			break;
 		}
 		this.width = bmpBullet.getWidth();
 		this.height = bmpBullet.getHeight();
 		this.live = true;
 	}
+	
 	
 	/**
 	 * 画子弹
@@ -98,10 +114,15 @@ public class EnemyBullet extends Rect
 		this.y += this.speed * Math.sin(rad);
 	}
 	
-	public void hitMyPlane()
+	/**
+	 * 敌人子弹碰撞到玩家飞机
+	 * 这里必须写成synchronized
+	 * 不然两个以上的子弹同时进入该方法会导致飞机在短时间内无敌
+	 */
+	public synchronized void hitMyPlane()
 	{
 		MyPlane plane = gameView.myPlane;
-		if (!live || plane.unBeatable)
+		if (!live || plane.unBeatable || !plane.live)
 		{
 			return;
 		}
@@ -115,6 +136,7 @@ public class EnemyBullet extends Rect
 				//罩子产生爆炸
 				Boom shieldBoom = new Boom(x, y, Boom.TYPE_BOOM_MY_PLANE_SHIELD, gameView);
 				gameView.boomVector.add(shieldBoom);
+				return;
 			}	
 		}
 		else 
@@ -124,11 +146,15 @@ public class EnemyBullet extends Rect
 			rect.height = 40;
 			if (this.hitOtherRect(rect))
 			{
+				this.live = false;
 				//玩家飞机死掉
 				gameView.myPlane.live = false;
 				//玩家飞机的爆炸
 				Boom planeBoom = new Boom(plane.x - 35, plane.y - 35, Boom.TYPE_BOOM_MY_PLANE, gameView);
 				gameView.boomVector.add(planeBoom);
+				
+				//游戏结束
+				gameView.gameOver();
 			}
 		}
 		
@@ -142,6 +168,7 @@ public class EnemyBullet extends Rect
 	 */
 	public void doLogic()
 	{
+		//碰撞玩家飞机检测
 		this.hitMyPlane();
 		//敌人飞机子弹的移动
 		if (bulletType == 4 || bulletType == 6)
