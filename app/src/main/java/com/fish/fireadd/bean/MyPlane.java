@@ -12,19 +12,21 @@ public class MyPlane extends Rect
 
 	private int noCollisionCount = 0;	//无敌计时器
 	private int noCollisionTime = 10;	//因为无敌时间
-	public boolean isCollision;
+	public boolean unBeatable;
 	
 	public Bitmap bmpMyPlane;
+	public Bitmap bmpMyPlaneLight;
 	private GameView gameView;
 	
 	public MyPlaneShield shield;
-	
+	public int myBulletType = 1;
 	
 	public MyPlane(int x, int y, GameView gameView)
 	{
 		super(x, y);
 		this.gameView = gameView;
 		this.bmpMyPlane = gameView.bmpMyPlane;
+		this.bmpMyPlaneLight = gameView.bmpMyPlaneLight;
 		this.width = bmpMyPlane.getWidth();
 		this.height = bmpMyPlane.getHeight();
 		this.live = true;
@@ -39,12 +41,15 @@ public class MyPlane extends Rect
 	 */
 	public void draw(Canvas canvas, Paint paint)
 	{
-		if (isCollision)
+		if (!this.live)
 		{
-			if (noCollisionCount % 2 == 0)
-			{
-				canvas.drawBitmap(bmpMyPlane, x, y, paint);
-			}
+			return;
+		}
+		//
+		
+		if (unBeatable)
+		{
+			canvas.drawBitmap(bmpMyPlaneLight, x, y, paint);
 		}
 		else 
 		{
@@ -52,29 +57,51 @@ public class MyPlane extends Rect
 		}
 		
 		
-		if (this.shield != null)
+		if (this.shield.live)
 		{
 			shield.draw(canvas, paint);
 		}
 	}
 	
 	/**
-	 * 根据弧度来控制飞机移动
-	 * @param rad 弧度数
+	 * 飞机的移动
+	 * @param pointX 移动后对应的X坐标
+	 * @param pointY 移动后对应的Y坐标
 	 */
 	public void move(int pointX, int pointY)
 	{
-		if (pointX < this.x)
+		if (pointX - this.x <= 2)
 		{
-			bmpMyPlane = gameView.bmpMyPlaneLeft;
+			if (unBeatable)
+			{
+				bmpMyPlane = gameView.bmpMyPlaneLightLeft;
+			}
+			else 
+			{
+				bmpMyPlane = gameView.bmpMyPlaneLeft;
+			}
 		}
-		else if (pointX > this.x)
+		else if (pointX - this.x >= 2)
 		{
-			bmpMyPlane = gameView.bmpMyPlaneRight;
+			if (unBeatable)
+			{
+				bmpMyPlane = gameView.bmpMyPlaneLightRight;
+			}
+			else 
+			{
+				bmpMyPlane = gameView.bmpMyPlaneRight;
+			}
 		}
 		else 
 		{
-			bmpMyPlane = gameView.bmpMyPlane;
+			if (unBeatable)
+			{
+				bmpMyPlane = gameView.bmpMyPlaneLight;
+			}
+			else 
+			{
+				bmpMyPlane = gameView.bmpMyPlane;
+			}
 		}
 		
 		this.x = pointX;
@@ -109,8 +136,22 @@ public class MyPlane extends Rect
 	 */
 	public void fire()
 	{
-		MyBullet bullet = new MyBullet(this.x + width / 2 - gameView.bmpMyBulletBasic.getWidth() / 2, this.y, gameView.bmpMyBulletBasic);
+		MyBullet bullet = new MyBullet(this.x + width / 2 - gameView.bmpMyBulletBasic.getWidth() / 2, this.y, myBulletType, gameView);
 		gameView.bulletVector.add(bullet);
+	}
+	
+	
+	public void hitEnemyBullet()
+	{
+		
+	}
+	
+	public void gameOverCheck()
+	{
+		if (this.live = false)
+		{
+			gameView.gameOver();
+		}
 	}
 	
 	/**
@@ -118,17 +159,19 @@ public class MyPlane extends Rect
 	 */
 	public void doLogic()
 	{
-		if (isCollision)
+		if (unBeatable)
 		{
 			noCollisionCount ++;
 			if (noCollisionCount >= noCollisionTime)
 			{
-				isCollision = false;
+				unBeatable = false;
 				noCollisionCount = 0;
 			}
 		}
 		
 		this.shield.doLogic();
+		
+		gameOverCheck();
 	}
 	
 

@@ -6,13 +6,12 @@ import java.util.Vector;
 import com.fish.fireadd.activity.MainActivity;
 import com.fish.fireadd.activity.R;
 import com.fish.fireadd.bean.BackGround;
-import com.fish.fireadd.bean.Boom;
 import com.fish.fireadd.bean.Boss;
 import com.fish.fireadd.bean.EnemyBullet;
 import com.fish.fireadd.bean.EnemyPlane;
 import com.fish.fireadd.bean.MyBullet;
 import com.fish.fireadd.bean.MyPlane;
-import com.fish.fireadd.bean.MyPlaneBoom;
+import com.fish.fireadd.bean.Boom;
 import com.fish.fireadd.bean.Rect;
 import com.fish.fireadd.constant.Constant;
 
@@ -45,13 +44,26 @@ public class GameView extends SurfaceView
 	
 	private Resources res;
 	public Bitmap bmpBackGround;
-	public Bitmap bmpMyPlane;
-	public Bitmap bmpMyPlaneLeft;
-	public Bitmap bmpMyPlaneRight;
+	//玩家的飞机
+	public Bitmap bmpMyPlane;	//正常情况的飞机
+	public Bitmap bmpMyPlaneLeft;	//向左飞的飞机
+	public Bitmap bmpMyPlaneRight;	//向右习的飞机
+	public Bitmap bmpMyPlaneLight;	//无敌时的飞机
+	public Bitmap bmpMyPlaneLightLeft;	//无敌时向左飞的飞机
+	public Bitmap bmpMyPlaneLightRight;	//无敌时向右飞的飞机
 	public Bitmap bmpMyPlaneShield;
+	//玩家的子弹
 	public Bitmap bmpMyBulletBasic;
+	public Bitmap bmpMyBulletBasicBack;
+	public Bitmap bmpMyBulletDouble;
+	public Bitmap bmpMyBulletDoubleBack;
+	public Bitmap bmpMyBulletPower;
+	public Bitmap bmpMyBulletPowerN;	
+	//玩家飞机爆炸
 	public Bitmap[] bmpMyPlaneBoom;
-	
+	//玩家罩子爆炸
+	public Bitmap[] bmpMyShieldBoom;
+	//敌人的飞机
 	public Bitmap bmpEnemy1;
 	public Bitmap bmpEnemy1n;
 	public Bitmap bmpEnemy2;
@@ -74,12 +86,25 @@ public class GameView extends SurfaceView
 	public Bitmap bmpEnemyBig2n;
 	public Bitmap bmpEnemyBig3;
 	public Bitmap bmpEnemyBig3n;
-
+	//敌人的子弹
 	public Bitmap bmpEnemyBullet1;
 	public Bitmap bmpEnemyBullet2;
 	public Bitmap bmpEnemyBullet3;
 	public Bitmap bmpEnemyBullet4;
 	public Bitmap bmpEnemyBullet5;
+	public Bitmap bmpEnemyBullet6;
+	public Bitmap bmpEnemyBulletBig1;
+	public Bitmap bmpEnemyBulletBig2;
+	public Bitmap bmpEnemyBulletBig3;
+	//敌机的爆炸
+	public Bitmap[] bmpEnemyBoom;
+	//大型敌机的爆炸
+	public Bitmap[] bmpEnemyBoomBig;
+	//加强版的大型敌机的爆炸
+	public Bitmap[] bmpEnemyBoomBigN;
+	
+	
+	
 	
 	public Bitmap bmpBoss1;
 	public Bitmap bmpBoss2;
@@ -92,7 +117,6 @@ public class GameView extends SurfaceView
 	
 	public BackGround backGround;
 	public MyPlane myPlane;
-	public MyPlaneBoom myPlaneBoom;
 	public Boss boss;
 	public Vector<MyBullet> bulletVector = new Vector<MyBullet>();
 	public Vector<EnemyPlane> enemyPlaneVector = new Vector<EnemyPlane>();
@@ -101,11 +125,11 @@ public class GameView extends SurfaceView
 	
 	
 	private int enemyArray[][] = {
-			{1, 2}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
-			{1, 2}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
-			{1, 2}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
-			{1, 2}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
-			{1, 2}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9}
+			{4, 7, 4, 2, 1, 2, 1, 1}, {8, 2, 1, 2, 4, 2, 4, 1}, {4, 9, 1, 2, 1, 4, 1, 4},{8, 4}, {4, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
+			{4, 2}, {4, 3}, {1, 5},{4, 4}, {4, 7}, {4, 3}, {4, 7}, {4, 3}, {8, 7, 9},
+			{4, 2}, {4, 3}, {4, 5},{4, 4}, {4, 7}, {8, 3}, {5, 7}, {3, 3}, {5, 7, 9},
+			{1, 4}, {4, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {4, 7}, {3, 3}, {5, 7, 9},
+			{1, 4}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {4, 3}, {5, 7}, {3, 3}, {5, 7, 9}
 	};
 	private int enemyArrayIndex = 0;
 	private int createEnemyTime = 150;
@@ -115,8 +139,8 @@ public class GameView extends SurfaceView
 	
 	Random rand = new Random();
 	
-	private int gameScore = 0;
-	private int life = 3;
+	public int gameScore = 0;
+	public int life = 3;
 	public int level = 1;
 	
 	//触屏点与飞机的距离
@@ -148,11 +172,22 @@ public class GameView extends SurfaceView
 		height = getHeight();
 		res = getResources();
 		bmpBackGround = BitmapFactory.decodeResource(res, R.drawable.bg_gameing);
+		//玩家的飞机
 		bmpMyPlane = BitmapFactory.decodeResource(res, R.drawable.my_plane);
 		bmpMyPlaneLeft = BitmapFactory.decodeResource(res, R.drawable.my_plane_left);
 		bmpMyPlaneRight = BitmapFactory.decodeResource(res, R.drawable.my_plane_right);
+		bmpMyPlaneLight = BitmapFactory.decodeResource(res, R.drawable.my_plane_light);
+		bmpMyPlaneLightLeft = BitmapFactory.decodeResource(res, R.drawable.my_plane_light_left);
+		bmpMyPlaneLightRight = BitmapFactory.decodeResource(res, R.drawable.my_plane_light_right);
 		bmpMyPlaneShield = BitmapFactory.decodeResource(res, R.drawable.my_plane_shield);
+		//玩家的子弹
 		bmpMyBulletBasic = BitmapFactory.decodeResource(res, R.drawable.my_bullet_basic);
+		bmpMyBulletBasicBack = BitmapFactory.decodeResource(res, R.drawable.my_bullet_basic_back);
+		bmpMyBulletDouble = BitmapFactory.decodeResource(res, R.drawable.my_bullet_double);
+		bmpMyBulletDoubleBack = BitmapFactory.decodeResource(res, R.drawable.my_bullet_double_back);
+		bmpMyBulletPower = BitmapFactory.decodeResource(res, R.drawable.my_bullet_power);
+		bmpMyBulletPowerN = BitmapFactory.decodeResource(res, R.drawable.my_bullet_power_n);
+		//玩家飞机爆炸
 		bmpMyPlaneBoom = new Bitmap[30];
 		bmpMyPlaneBoom[0] = BitmapFactory.decodeResource(res, R.drawable.plane_explode00);
 		bmpMyPlaneBoom[1] = BitmapFactory.decodeResource(res, R.drawable.plane_explode01);
@@ -184,7 +219,19 @@ public class GameView extends SurfaceView
 		bmpMyPlaneBoom[27] = BitmapFactory.decodeResource(res, R.drawable.plane_explode27);
 		bmpMyPlaneBoom[28] = BitmapFactory.decodeResource(res, R.drawable.plane_explode28);
 		bmpMyPlaneBoom[29] = BitmapFactory.decodeResource(res, R.drawable.plane_explode29);
-		
+		//玩家罩子的爆炸
+		bmpMyShieldBoom = new Bitmap[10];
+		bmpMyShieldBoom[0] = BitmapFactory.decodeResource(res, R.drawable.shield_explode00);
+		bmpMyShieldBoom[1] = BitmapFactory.decodeResource(res, R.drawable.shield_explode01);
+		bmpMyShieldBoom[2] = BitmapFactory.decodeResource(res, R.drawable.shield_explode02);
+		bmpMyShieldBoom[3] = BitmapFactory.decodeResource(res, R.drawable.shield_explode03);
+		bmpMyShieldBoom[4] = BitmapFactory.decodeResource(res, R.drawable.shield_explode04);
+		bmpMyShieldBoom[5] = BitmapFactory.decodeResource(res, R.drawable.shield_explode05);
+		bmpMyShieldBoom[6] = BitmapFactory.decodeResource(res, R.drawable.shield_explode06);
+		bmpMyShieldBoom[7] = BitmapFactory.decodeResource(res, R.drawable.shield_explode07);
+		bmpMyShieldBoom[8] = BitmapFactory.decodeResource(res, R.drawable.shield_explode08);
+		bmpMyShieldBoom[9] = BitmapFactory.decodeResource(res, R.drawable.shield_explode09);
+		//敌人的飞机
 		bmpEnemy1 = BitmapFactory.decodeResource(res, R.drawable.enemy_1);
 		bmpEnemy1n = BitmapFactory.decodeResource(res, R.drawable.enemy_1n);
 		bmpEnemy2 = BitmapFactory.decodeResource(res, R.drawable.enemy_2);
@@ -207,13 +254,78 @@ public class GameView extends SurfaceView
 		bmpEnemyBig2n = BitmapFactory.decodeResource(res, R.drawable.enemy_big2n);
 		bmpEnemyBig3 = BitmapFactory.decodeResource(res, R.drawable.enemy_big3);
 		bmpEnemyBig3n = BitmapFactory.decodeResource(res, R.drawable.enemy_big3n);
+		//敌人的子弹
+		bmpEnemyBullet1 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_1);
+		bmpEnemyBullet2 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_2);
+		bmpEnemyBullet3 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_3);
+		bmpEnemyBullet4 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_4);
+		bmpEnemyBullet5 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_5);
+		bmpEnemyBullet6 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_6);
+		bmpEnemyBulletBig1 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_big1);
+		bmpEnemyBulletBig2 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_big2);
+		bmpEnemyBulletBig3 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_big3);
+		//敌人飞机的爆炸
+		bmpEnemyBoom = new Bitmap[7];
+		bmpEnemyBoom[0] = BitmapFactory.decodeResource(res, R.drawable.enemy_explode00);
+		bmpEnemyBoom[1] = BitmapFactory.decodeResource(res, R.drawable.enemy_explode01);
+		bmpEnemyBoom[2] = BitmapFactory.decodeResource(res, R.drawable.enemy_explode02);
+		bmpEnemyBoom[3] = BitmapFactory.decodeResource(res, R.drawable.enemy_explode03);
+		bmpEnemyBoom[4] = BitmapFactory.decodeResource(res, R.drawable.enemy_explode04);
+		bmpEnemyBoom[5] = BitmapFactory.decodeResource(res, R.drawable.enemy_explode05);
+		bmpEnemyBoom[6] = BitmapFactory.decodeResource(res, R.drawable.enemy_explode06);
+		bmpEnemyBoomBig = new Bitmap[24];
+		bmpEnemyBoomBig[0] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion00);
+		bmpEnemyBoomBig[1] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion01);
+		bmpEnemyBoomBig[2] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion02);
+		bmpEnemyBoomBig[3] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion03);
+		bmpEnemyBoomBig[4] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion04);
+		bmpEnemyBoomBig[5] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion05);
+		bmpEnemyBoomBig[6] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion06);
+		bmpEnemyBoomBig[7] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion07);
+		bmpEnemyBoomBig[8] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion08);
+		bmpEnemyBoomBig[9] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion09);
+		bmpEnemyBoomBig[10] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion10);
+		bmpEnemyBoomBig[11] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion11);
+		bmpEnemyBoomBig[12] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion12);
+		bmpEnemyBoomBig[13] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion13);
+		bmpEnemyBoomBig[14] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion14);
+		bmpEnemyBoomBig[15] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion15);
+		bmpEnemyBoomBig[16] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion16);
+		bmpEnemyBoomBig[17] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion17);
+		bmpEnemyBoomBig[18] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion18);
+		bmpEnemyBoomBig[19] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion19);
+		bmpEnemyBoomBig[20] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion20);
+		bmpEnemyBoomBig[21] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion21);
+		bmpEnemyBoomBig[22] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion22);
+		bmpEnemyBoomBig[23] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion23);
+		//大型敌机的爆炸
+		bmpEnemyBoomBigN = new Bitmap[24];
+//		bmpEnemyBoomBigN[0] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion00);
+//		bmpEnemyBoomBigN[1] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion01);
+//		bmpEnemyBoomBigN[2] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion02);
+//		bmpEnemyBoomBigN[3] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion03);
+//		bmpEnemyBoomBigN[4] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion04);
+//		bmpEnemyBoomBigN[5] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion05);
+//		bmpEnemyBoomBigN[6] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion06);
+//		bmpEnemyBoomBigN[7] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion07);
+//		bmpEnemyBoomBigN[8] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion08);
+//		bmpEnemyBoomBigN[9] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion09);
+//		bmpEnemyBoomBigN[10] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion10);
+//		bmpEnemyBoomBigN[11] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion11);
+//		bmpEnemyBoomBigN[12] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion12);
+//		bmpEnemyBoomBigN[13] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion13);
+//		bmpEnemyBoomBigN[14] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion14);
+//		bmpEnemyBoomBigN[15] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion15);
+//		bmpEnemyBoomBigN[16] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion16);
+//		bmpEnemyBoomBigN[17] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion17);
+//		bmpEnemyBoomBigN[18] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion18);
+//		bmpEnemyBoomBigN[19] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion19);
+//		bmpEnemyBoomBigN[20] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion20);
+//		bmpEnemyBoomBigN[21] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion21);
+//		bmpEnemyBoomBigN[22] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion22);
+//		bmpEnemyBoomBigN[23] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion23);
 		
 		
-//		bmpEnemyBullet1 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_1);
-//		bmpEnemyBullet2 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_2);
-//		bmpEnemyBullet3 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_3);
-//		bmpEnemyBullet4 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_4);
-//		bmpEnemyBullet5 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_5);
 //		bmpEnemy7 = BitmapFactory.decodeResource(res, R.drawable.enemy_7);
 //		bmpBoss1 = BitmapFactory.decodeResource(res, R.drawable.boss_1);
 //		bmpBoss2 = BitmapFactory.decodeResource(res, R.drawable.boss_2);
@@ -223,7 +335,8 @@ public class GameView extends SurfaceView
 		
 		random = new Random();
 		myPlane = new MyPlane(240, 600, this);
-		myPlaneBoom = new MyPlaneBoom(240, 50, this);
+		Boom myPlaneBoom = new Boom(240, 50, Boom.TYPE_BOOM_MY_PLANE, this);
+		boomVector.add(myPlaneBoom);
 		backGround = new BackGround(bmpBackGround, this);
 	}
 	
@@ -248,11 +361,6 @@ public class GameView extends SurfaceView
 			
 			myPlane.draw(canvas, paint);	//画玩家飞机
 			
-			if (myPlaneBoom != null)
-			{
-				myPlaneBoom.draw(canvas, paint);
-			}
-				
 			//Log.i("gameView", "bullet.size = " + bulletVector.size());
 			synchronized (bulletVector)
 			{
@@ -293,6 +401,10 @@ public class GameView extends SurfaceView
 				}
 			}
 			
+			//游戏中的提示,包括游戏开始和游戏结束
+			//
+			//
+			
 			//让文字在飞机的上面
 			paint.setColor(Color.YELLOW);
 			canvas.drawText("当前关数:" + this.level, 1, 15, paint);
@@ -310,8 +422,6 @@ public class GameView extends SurfaceView
 	{
 		//背景图片的逻辑处理
 		backGround.doLogic();
-		//飞机爆炸的逻辑处理
-		myPlaneBoom.doLogic();
 		
 		//子弹出界的逻辑处理
 		this.doRectLogic(bulletVector);
@@ -336,7 +446,7 @@ public class GameView extends SurfaceView
 	{
 		for(int position = rectVector.size() - 1; position >= 0; position --)
 		{
-			Rect rect = rectVector.elementAt(position);
+			Rect rect = rectVector.get(position);
 			if (rect.live)
 			{
 				rect.doLogic();
@@ -416,7 +526,7 @@ public class GameView extends SurfaceView
 	public boolean onTouchEvent(MotionEvent event)
 	{
 		this.step ++;
-		if (step >= 2)
+		if (step >= 5)
 		{
 			myPlane.fire();
 			step = 0;
@@ -444,7 +554,14 @@ public class GameView extends SurfaceView
 			}
 			case MotionEvent.ACTION_UP:
 			{
-				myPlane.bmpMyPlane = bmpMyPlane;
+				if (myPlane.unBeatable)
+				{
+					myPlane.bmpMyPlane = bmpMyPlaneLight;
+				}
+				else 
+				{
+					myPlane.bmpMyPlane = bmpMyPlane;
+				}
 				break;
 			}
 		}

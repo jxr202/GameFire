@@ -5,7 +5,6 @@ import java.util.Random;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
 
 import com.fish.fireadd.view.GameView;
 
@@ -26,11 +25,12 @@ public class EnemyPlane extends Rect
 	private Bitmap bmpEnemyPlane;
 	private int speed;
 	public int score;
+	public int lifeValue;	//敌机现在的生命值
+	private GameView gameView;
 	
 	private boolean isNew = true;	//飞机是否变过方向,只适用于4号飞机
-	private boolean isLeft = true;
+	private boolean isLeft = true;	//飞机是否向左飞行,只适用于4号飞机
 	
-	private GameView gameView;
 
 	private static Random rand = new Random();
 
@@ -45,52 +45,60 @@ public class EnemyPlane extends Rect
 			this.bmpEnemyPlane = gameView.bmpEnemy1;
 			this.speed = 2;
 			this.score = 10;
+			this.lifeValue = 1;
 			break;
 		case TYPE_ENEMY_2:
 			this.bmpEnemyPlane = gameView.bmpEnemy2;
 			this.speed = 2;
 			this.score = 10;
+			this.lifeValue = 1;
 			break;
 		case TYPE_ENEMY_3:
 			this.bmpEnemyPlane = gameView.bmpEnemy3;
 			this.speed = 2;
 			this.score = 10;
+			this.lifeValue = 1;
 			break;
 		case TYPE_ENEMY_4:
 			this.bmpEnemyPlane = gameView.bmpEnemy4;
 			this.speed = 2;
 			this.score = 10;
+			this.lifeValue = 1;
 			break;
 		case TYPE_ENEMY_5:
 			this.bmpEnemyPlane = gameView.bmpEnemy5;
 			this.speed = 2;
 			this.score = 10;
+			this.lifeValue = 1;
 			break;
 		case TYPE_ENEMY_6:
 			this.bmpEnemyPlane = gameView.bmpEnemy6;
 			this.speed = 2;
 			this.score = 10;
+			this.lifeValue = 2;
 			break;
 		case TYPE_ENEMY_BIG_1:
 			this.bmpEnemyPlane = gameView.bmpEnemyBig1;
 			this.speed = 1;
 			this.score = 20;
+			this.lifeValue = 50;
 			break;
 		case TYPE_ENEMY_BIG_2:
 			this.bmpEnemyPlane = gameView.bmpEnemyBig2;
 			this.speed = 1;
 			this.score = 20;
+			this.lifeValue = 50;
 			break;
 		case TYPE_ENEMY_BIG_3:
 			this.bmpEnemyPlane = gameView.bmpEnemyBig3;
 			this.speed = 1;
 			this.score = 20;
+			this.lifeValue = 50;
 			break;
 		}
 		this.width = bmpEnemyPlane.getWidth();
 		this.height = bmpEnemyPlane.getHeight();
 		this.live = true;
-		
 	}
 
 	public void draw(Canvas canvas, Paint paint)
@@ -145,25 +153,50 @@ public class EnemyPlane extends Rect
 		}
 	}
 
+	public void fire()
+	{
+		EnemyBullet bullet;
+		if (enemyType <= 6)
+		{
+			bullet= new EnemyBullet(x + width / 2 - 5, y + height - 5, enemyType, gameView);
+		}
+		else 
+		{
+			//大飞机的子弹大一些
+			bullet= new EnemyBullet(x + width / 2 - 20, y + height - 15, enemyType, gameView);
+		}
+		gameView.enemyBulletVector.add(bullet);
+	}
+	
 	public void doLogic()
 	{
 		this.move();
-		if (this.y > 800)
+		if (this.y > 800 || this.x < 0 || this.x > 480)
 		{
-			//this.live = false;
+			this.live = false;
 		}
 		if (rand.nextInt(100) > 96)
 		{
 			this.fire();
 		}
-	}
-
-	public void fire()
-	{
 		
-		/*EnemyBullet bullet = new EnemyBullet(this.x + width / 2 - gameView.bmpMyBullet.getWidth()
-				/ 2, y + height - gameView.bmpMyBullet.getHeight() / 2, tempType, this.gameView);
-		this.gameView.enemyBulletVector.add(bullet); */
+		//如果敌机的生命值变成了0,飞机死掉并产生爆炸
+		if (lifeValue <= 0)
+		{
+			this.live = false;	//飞机死掉
+			//敌人飞机产生爆炸,其半径为32,调整为40
+			Boom boom;
+			if (this.enemyType <= 6)
+			{
+				boom = new Boom(x + width / 2 - 40, y + height / 2 - 40, Boom.TYPE_BOOM_ENEMY_PLANE, gameView);
+			}
+			else 
+			{
+				boom = new Boom(x + width / 2 - 150, y + height / 2 - 158, Boom.TYPE_BOOM_ENEMY_PLANE_BIG, gameView);
+			}
+			gameView.boomVector.add(boom);
+			//玩家加分
+			gameView.gameScore += this.score;
+		}
 	}
-	
 }

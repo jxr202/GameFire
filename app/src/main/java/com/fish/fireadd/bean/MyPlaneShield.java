@@ -1,6 +1,5 @@
 package com.fish.fireadd.bean;
 
-import com.fish.fireadd.constant.Constant;
 import com.fish.fireadd.view.GameView;
 
 import android.graphics.Bitmap;
@@ -18,6 +17,7 @@ public class MyPlaneShield extends Rect
 		super(x, y);
 		this.gameView = gameView;
 		this.bmpMyPlaneShield = gameView.bmpMyPlaneShield;
+		this.live = true;
 	}
 	
 	
