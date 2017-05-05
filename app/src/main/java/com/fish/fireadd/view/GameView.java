@@ -36,7 +36,7 @@ public class GameView extends SurfaceView
 	public int height;
 	
 	private Object onTouch;
-	private long sleepTime = 100; 
+	private long sleepTime = 50; 
 	private int step = 0;
 	
 	private MainActivity activity;
@@ -52,18 +52,35 @@ public class GameView extends SurfaceView
 	public Bitmap bmpMyBulletBasic;
 	public Bitmap[] bmpMyPlaneBoom;
 	
+	public Bitmap bmpEnemy1;
+	public Bitmap bmpEnemy1n;
+	public Bitmap bmpEnemy2;
+	public Bitmap bmpEnemy2n;
+	public Bitmap bmpEnemy3;
+	public Bitmap bmpEnemy3n;
+	public Bitmap bmpEnemy4;
+	public Bitmap bmpEnemy4Left;
+	public Bitmap bmpEnemy4Right;
+	public Bitmap bmpEnemy4n;
+	public Bitmap bmpEnemy4nLeft;
+	public Bitmap bmpEnemy4nRight;
+	public Bitmap bmpEnemy5;
+	public Bitmap bmpEnemy5n;
+	public Bitmap bmpEnemy6;
+	public Bitmap bmpEnemy6n;
+	public Bitmap bmpEnemyBig1;
+	public Bitmap bmpEnemyBig1n;
+	public Bitmap bmpEnemyBig2;
+	public Bitmap bmpEnemyBig2n;
+	public Bitmap bmpEnemyBig3;
+	public Bitmap bmpEnemyBig3n;
+
 	public Bitmap bmpEnemyBullet1;
 	public Bitmap bmpEnemyBullet2;
 	public Bitmap bmpEnemyBullet3;
 	public Bitmap bmpEnemyBullet4;
 	public Bitmap bmpEnemyBullet5;
-	public Bitmap bmpEnemy1;
-	public Bitmap bmpEnemy2;
-	public Bitmap bmpEnemy3;
-	public Bitmap bmpEnemy4;
-	public Bitmap bmpEnemy5;
-	public Bitmap bmpEnemy6;
-	public Bitmap bmpEnemy7;	//超级飞机
+	
 	public Bitmap bmpBoss1;
 	public Bitmap bmpBoss2;
 	public Bitmap bmpBoss3;
@@ -81,6 +98,19 @@ public class GameView extends SurfaceView
 	public Vector<EnemyPlane> enemyPlaneVector = new Vector<EnemyPlane>();
 	public Vector<EnemyBullet> enemyBulletVector = new Vector<EnemyBullet>();
 	public Vector<Boom> boomVector = new Vector<Boom>();	
+	
+	
+	private int enemyArray[][] = {
+			{1, 2}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
+			{1, 2}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
+			{1, 2}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
+			{1, 2}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
+			{1, 2}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9}
+	};
+	private int enemyArrayIndex = 0;
+	private int createEnemyTime = 150;
+	private int createEnemyCount = 0;
+	private Random random;
 	
 	
 	Random rand = new Random();
@@ -155,17 +185,35 @@ public class GameView extends SurfaceView
 		bmpMyPlaneBoom[28] = BitmapFactory.decodeResource(res, R.drawable.plane_explode28);
 		bmpMyPlaneBoom[29] = BitmapFactory.decodeResource(res, R.drawable.plane_explode29);
 		
+		bmpEnemy1 = BitmapFactory.decodeResource(res, R.drawable.enemy_1);
+		bmpEnemy1n = BitmapFactory.decodeResource(res, R.drawable.enemy_1n);
+		bmpEnemy2 = BitmapFactory.decodeResource(res, R.drawable.enemy_2);
+		bmpEnemy2n = BitmapFactory.decodeResource(res, R.drawable.enemy_2n);
+		bmpEnemy3 = BitmapFactory.decodeResource(res, R.drawable.enemy_3);
+		bmpEnemy3n = BitmapFactory.decodeResource(res, R.drawable.enemy_3n);
+		bmpEnemy4 = BitmapFactory.decodeResource(res, R.drawable.enemy_4);
+		bmpEnemy4Left = BitmapFactory.decodeResource(res, R.drawable.enemy_4_left);
+		bmpEnemy4Right = BitmapFactory.decodeResource(res, R.drawable.enemy_4_right);
+		bmpEnemy4n = BitmapFactory.decodeResource(res, R.drawable.enemy_4n);
+		bmpEnemy4nLeft = BitmapFactory.decodeResource(res, R.drawable.enemy_4n_left);
+		bmpEnemy4nRight = BitmapFactory.decodeResource(res, R.drawable.enemy_4n_right);
+		bmpEnemy5 = BitmapFactory.decodeResource(res, R.drawable.enemy_5);
+		bmpEnemy5n = BitmapFactory.decodeResource(res, R.drawable.enemy_5n);
+		bmpEnemy6 = BitmapFactory.decodeResource(res, R.drawable.enemy_6);
+		bmpEnemy6n = BitmapFactory.decodeResource(res, R.drawable.enemy_6n);
+		bmpEnemyBig1 = BitmapFactory.decodeResource(res, R.drawable.enemy_big1);
+		bmpEnemyBig1n = BitmapFactory.decodeResource(res, R.drawable.enemy_big1n);
+		bmpEnemyBig2 = BitmapFactory.decodeResource(res, R.drawable.enemy_big2);
+		bmpEnemyBig2n = BitmapFactory.decodeResource(res, R.drawable.enemy_big2n);
+		bmpEnemyBig3 = BitmapFactory.decodeResource(res, R.drawable.enemy_big3);
+		bmpEnemyBig3n = BitmapFactory.decodeResource(res, R.drawable.enemy_big3n);
+		
+		
 //		bmpEnemyBullet1 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_1);
 //		bmpEnemyBullet2 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_2);
 //		bmpEnemyBullet3 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_3);
 //		bmpEnemyBullet4 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_4);
 //		bmpEnemyBullet5 = BitmapFactory.decodeResource(res, R.drawable.enemy_bullet_5);
-//		bmpEnemy1 = BitmapFactory.decodeResource(res, R.drawable.enemy_1);
-//		bmpEnemy2 = BitmapFactory.decodeResource(res, R.drawable.enemy_2);
-//		bmpEnemy3 = BitmapFactory.decodeResource(res, R.drawable.enemy_3);
-//		bmpEnemy4 = BitmapFactory.decodeResource(res, R.drawable.enemy_4);
-//		bmpEnemy5 = BitmapFactory.decodeResource(res, R.drawable.enemy_5);
-//		bmpEnemy6 = BitmapFactory.decodeResource(res, R.drawable.enemy_6);
 //		bmpEnemy7 = BitmapFactory.decodeResource(res, R.drawable.enemy_7);
 //		bmpBoss1 = BitmapFactory.decodeResource(res, R.drawable.boss_1);
 //		bmpBoss2 = BitmapFactory.decodeResource(res, R.drawable.boss_2);
@@ -173,6 +221,7 @@ public class GameView extends SurfaceView
 //		bmpBoss4 = BitmapFactory.decodeResource(res, R.drawable.boss_4);
 //		bmpBoom = BitmapFactory.decodeResource(res, R.drawable.boom);
 		
+		random = new Random();
 		myPlane = new MyPlane(240, 600, this);
 		myPlaneBoom = new MyPlaneBoom(240, 50, this);
 		backGround = new BackGround(bmpBackGround, this);
@@ -204,7 +253,7 @@ public class GameView extends SurfaceView
 				myPlaneBoom.draw(canvas, paint);
 			}
 				
-			Log.i("gameView", "bullet.size = " + bulletVector.size());
+			//Log.i("gameView", "bullet.size = " + bulletVector.size());
 			synchronized (bulletVector)
 			{
 				for(MyBullet bullet : bulletVector)	//画子弹
@@ -223,7 +272,7 @@ public class GameView extends SurfaceView
 				canvas.drawRect(200, 20, 200 + boss.leftValue / 5, 35, paint);
 			}
 			
-			//Log.i("gameView", "enemyPlane.size = " + enemyPlaneVector.size());
+			Log.i("gameView", "enemyPlane.size = " + enemyPlaneVector.size());
 			for(EnemyPlane plane : enemyPlaneVector)	//画敌人飞机
 			{
 				plane.draw(canvas, paint);
@@ -266,6 +315,9 @@ public class GameView extends SurfaceView
 		
 		//子弹出界的逻辑处理
 		this.doRectLogic(bulletVector);
+		//敌机产生的逻辑处理
+		this.createEnemy();
+		
 		//敌机出界的逻辑处理
 		this.doRectLogic(enemyPlaneVector);
 		//敌人子弹出界的逻辑处理
@@ -297,11 +349,32 @@ public class GameView extends SurfaceView
 	}
 	
 	/**
-	 * 随机产生敌机
+	 * 敌机产生的逻辑
 	 */
 	public void createEnemy()
 	{
-		
+		createEnemyCount ++;
+		if (createEnemyCount >= createEnemyTime)
+		{
+			int enemyTemp[] = enemyArray[enemyArrayIndex];
+			for (int i = 0; i < enemyTemp.length; i ++)
+			{
+				int x;
+				if (enemyTemp[i] <= 6)
+				{
+					x = random.nextInt(width - 150) + 50;
+				}
+				else
+				{
+					//如果是大飞机,则...
+					x = random.nextInt(width - 250) + 50;
+				}
+				EnemyPlane plane = new EnemyPlane(x, -20, enemyTemp[i], this);
+				enemyPlaneVector.add(plane);
+			}
+			createEnemyCount = 0;
+			enemyArrayIndex ++;
+		}
 	}
 	
 	/**
