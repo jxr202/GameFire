@@ -6,6 +6,7 @@ import com.fish.fireadd.constant.Constant;
 import com.fish.fireadd.constant.Sound;
 import com.fish.fireadd.constant.SoundPoolUtil;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -31,18 +32,18 @@ public class WelcomeView extends SurfaceView implements Callback
 	private Bitmap exitButton;
 	
 	private Bitmap gameStart, gameStartDown;
-	private Bitmap gameHelp, gameHelpDown;
-	private Bitmap gameAbout, gameAboutDown;
-	private Bitmap gameExit, gameExitDown;
+	private Bitmap gameHelpDown;
+	private Bitmap gameAboutDown;
+	private Bitmap gameExitDown;
 
 	private int startX, startY; // 图片X,Y坐标
 	private int helpY, aboutY, exitY; // 图片Y坐标
 	private int imgWidth, imgHeight;
 
-	public WelcomeView(MainActivity activity)
+	public WelcomeView(Context context)
 	{
-		super(activity);
-		this.activity = activity;
+		super(context);
+		this.activity = (MainActivity) context;
 		this.holder = getHolder();
 		holder.addCallback(this); // 设置生命周期回调接口的实现者
 
@@ -60,11 +61,11 @@ public class WelcomeView extends SurfaceView implements Callback
 		backGround = BitmapFactory.decodeResource(activity.getResources(), R.drawable.bg_welcome);
 		startButton = gameStart = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_start);
 		gameStartDown = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_start_down);
-		helpButton = gameHelp = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_help);
+		helpButton = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_help);
 		gameHelpDown = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_help_down);
-		aboutButton = gameAbout = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_about);
+		aboutButton = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_about);
 		gameAboutDown = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_about_down);
-		exitButton = gameExit = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_exit);
+		exitButton = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_exit);
 		gameExitDown = BitmapFactory.decodeResource(activity.getResources(), R.drawable.game_exit_down);
 	}
 
@@ -80,8 +81,7 @@ public class WelcomeView extends SurfaceView implements Callback
 		exitY = aboutY + Constant.Welcome.ADD;
 	}
 
-	@Override
-	protected void onDraw(Canvas canvas)
+	protected void doDraw(Canvas canvas)
 	{
 		canvas.drawBitmap(backGround, 0, 0, null);
 		// 开始游戏
@@ -163,7 +163,7 @@ public class WelcomeView extends SurfaceView implements Callback
 					{
 						Thread.sleep(200);
 						activity.hd.sendEmptyMessage(Constant.GAME_EXIT);
-					}
+				}
 					catch (InterruptedException e1)
 					{
 						e1.printStackTrace();
@@ -197,13 +197,12 @@ public class WelcomeView extends SurfaceView implements Callback
 	// 画图
 	public void repaint()
 	{
-		SurfaceHolder holder = this.getHolder();
 		Canvas canvas = holder.lockCanvas();
 		try
 		{
-			synchronized (holder)
+			synchronized (getHolder())
 			{
-				onDraw(canvas);
+				doDraw(canvas);
 			}
 		}
 		catch (Exception e)

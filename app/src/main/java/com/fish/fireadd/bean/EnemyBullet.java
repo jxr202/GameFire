@@ -1,6 +1,5 @@
 package com.fish.fireadd.bean;
 
-import com.fish.fireadd.constant.Constant;
 import com.fish.fireadd.constant.Sound;
 import com.fish.fireadd.view.GameView;
 
@@ -90,8 +89,8 @@ public class EnemyBullet extends Rect
 	
 	/**
 	 * 画子弹
-	 * @param canvas
-	 * @param paint
+	 * @param canvas c
+	 * @param paint p
 	 */
 	public void draw(Canvas canvas, Paint paint)
 	{
@@ -198,7 +197,7 @@ public class EnemyBullet extends Rect
 		{
 			this.live = false;
 		}
-		else if (this.x + this.width > Constant.WIDTH)
+		else if (this.x + this.width > gameView.getWidth())
 		{
 			this.live = false;
 		}
@@ -206,7 +205,7 @@ public class EnemyBullet extends Rect
 		{
 			this.live = false;
 		}
-		else if (this.y >= 800)
+		else if (this.y >= gameView.getHeight())
 		{
 			this.live = false;
 		}

@@ -24,7 +24,7 @@ public class MyBullet extends Rect
 	private int speed = 8;
 	private GameView gameView;
 	
-	private double rad;	//微型跟踪子弹的弧度
+	private double rad = Math.PI / 2;	//微型跟踪子弹的弧度
 	
 	//F型子弹的播放帧数
 	private int totalFrame = 8;
@@ -156,19 +156,13 @@ public class MyBullet extends Rect
 	public void doLogic()
 	{
 		this.hitEnemyPlane();
-		if (this.rad != 0)
-		{
-			this.move(rad);
-		}
-		else 
-		{
-			this.move();
-		}
-		if (this.x < 0 || this.x > 480)
+		this.move(rad);
+		//this.move();
+		if (this.x < 0 || this.x > gameView.getWidth())
 		{
 			this.live = false;
 		}
-		if(this.y + this.height <= 0 || this.y > 800)
+		if(this.y + this.height <= 0 || this.y > gameView.getHeight())
 		{
 			this.live = false;
 		}

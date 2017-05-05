@@ -92,9 +92,9 @@ public class Boss extends Rect
 		{
 			this.x = 0;
 		}
-		else if (this.x + this.width >= Constant.WIDTH)
+		else if (this.x + this.width >= gameView.getWidth())
 		{
-			this.x = Constant.WIDTH - width;
+			this.x = gameView.getWidth() - width;
 		}
 	}
 	
@@ -131,7 +131,7 @@ public class Boss extends Rect
 			return;
 		}
 		this.move();
-		if (rand.nextInt(100) > 99)
+		if (rand.nextInt(100) > 90)
 		{
 			this.fire();
 		}

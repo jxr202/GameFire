@@ -8,14 +8,12 @@ public class MediaPlayerUtil
 	private static MediaPlayerUtil instance;
 	private Context context;
 	private MediaPlayer mediaPlayer;
-	
-	private boolean isPlaying;
 	private int playingId;
 	
 	/**
 	 * 在私有构造方法中初始化数据，
 	 * 以便于使用时已经加载过
-	 * @param context
+	 * @param context c
 	 */
 	private MediaPlayerUtil(Context context)
 	{
@@ -25,8 +23,8 @@ public class MediaPlayerUtil
 	
 	/**
 	 * 取得MediaPlayerUtil的实例
-	 * @param context
-	 * @return
+	 * @param context c
+	 * @return this
 	 */
 	public static MediaPlayerUtil getInstance(Context context)
 	{
@@ -40,7 +38,7 @@ public class MediaPlayerUtil
 	
 	/**
 	 * 播放对应资源的声音
-	 * @param sound
+	 * @param resId id
 	 */
 	public void play(int resId)
 	{
@@ -56,20 +54,18 @@ public class MediaPlayerUtil
 			if (mediaPlayer != null)
 			{
 				mediaPlayer.start();
-				isPlaying = true;
 				playingId = resId;
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return;
 		}
 	}
 	
 	/**
 	 * 循环播放对应资源的声音
-	 * @param sound
+	 * @param resId id
 	 */
 	public void playLoop(int resId)
 	{
@@ -86,14 +82,12 @@ public class MediaPlayerUtil
 			if (mediaPlayer != null)
 			{
 				mediaPlayer.start();
-				isPlaying = true;
 				playingId = resId;
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return;
 		}
 	}
 	

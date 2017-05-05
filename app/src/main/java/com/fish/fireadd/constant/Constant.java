@@ -2,14 +2,6 @@ package com.fish.fireadd.constant;
 
 public class Constant 
 {
-	public static final int WIDTH = 480;
-	public static final int HEIGHT = 800;
-	
-	public static final int YG_HEIGHT = 220;
-	
-	public static final int BOSS_TYPE = 10;
-	
-	
 	public static class Welcome
 	{
 		public static final int LEFT_X = 118;

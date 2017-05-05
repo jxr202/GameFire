@@ -3,7 +3,6 @@ package com.fish.fireadd.view;
 import java.util.Random;
 import java.util.Vector;
 
-import com.fish.fireadd.activity.MainActivity;
 import com.fish.fireadd.activity.R;
 import com.fish.fireadd.bean.BackGround;
 import com.fish.fireadd.bean.Boss;
@@ -15,17 +14,16 @@ import com.fish.fireadd.bean.Boom;
 import com.fish.fireadd.bean.Prize;
 import com.fish.fireadd.bean.Rect;
 import com.fish.fireadd.bean.Tips;
-import com.fish.fireadd.constant.Constant;
 import com.fish.fireadd.constant.MediaPlayerUtil;
 import com.fish.fireadd.constant.SoundPoolUtil;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.text.style.BulletSpan;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -37,19 +35,18 @@ public class GameView extends SurfaceView
 
 	public int width;
 	public int height;
-	
-	private Object onTouch;
-	private long sleepTime = 50; 
-	private int step = 0;
-	
+
+	public final Object onTouch;
+	public long sleepTime = 50;
+	public int step = 0;
+
+	public Context mContext;
 	public SoundPoolUtil soundPool;	//声音播放类
 	public MediaPlayerUtil mediaPlayer;	//声音播放类
-	public MainActivity activity;
-	private SurfaceHolder holder;	//GameView是通过holder来控制View的
-	private Paint paint;
-	
-	private Resources res;
+	public SurfaceHolder holder;	//GameView是通过holder来控制View的
+	public Paint paint;
 	public Bitmap bmpBackGround;
+
 	//玩家的飞机
 	public Bitmap bmpMyPlane;	//正常情况的飞机
 	public Bitmap bmpMyPlaneLeft;	//向左飞的飞机
@@ -122,34 +119,27 @@ public class GameView extends SurfaceView
 	//游戏中的奖品
 	public Bitmap bmpPrizeLight;
 	public Bitmap bmpPrizeP;
+	public Bitmap bmpPrizeB;
 	public Bitmap bmpPrizeS;
 	public Bitmap bmpPrizeF;
 	public Bitmap bmpPrizeL;
 	
 	public boolean gameOver = false;	//线程开关
 	public boolean isBossLive = false;	//创建敌机开关
+	public boolean isPlayMusic = false;
 	
 	public BackGround backGround;
 	public MyPlane myPlane;
 	public Boss boss;
 	public Tips tips;
 	
-	public Vector<MyBullet> bulletVector = new Vector<MyBullet>();
-	public Vector<EnemyPlane> enemyPlaneVector = new Vector<EnemyPlane>();
-	public Vector<EnemyBullet> enemyBulletVector = new Vector<EnemyBullet>();
-	public Vector<Boom> boomVector = new Vector<Boom>();	
-	public Vector<Prize> prizeVector = new Vector<Prize>();	
-	
-//	private int enemyArray[][] = {
-//			{4, 7, 4, 2, 1, 2, 1, 1}, {8, 2, 1, 2, 4, 2, 4, 1}, {4, 9, 1, 2, 1, 4, 1, 4},{8, 4}, {4, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
-//			{4, 2}, {4, 3}, {1, 5},{4, 4}, {4, 7}, {4, 3}, {4, 7}, {4, 3}, {8, 7, 9},
-//			{4, 2}, {4, 3}, {4, 5},{4, 4}, {4, 7}, {8, 3}, {5, 7}, {3, 3}, {5, 7, 9},
-//			{1, 4}, {4, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {4, 7}, {3, 3}, {5, 7, 9},
-//			{1, 4}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {4, 3}, {5, 7}, {3, 3}, {5, 7, 9}
-//	};
+	public final Vector<MyBullet> bulletVector = new Vector<>();
+	public Vector<EnemyPlane> enemyPlaneVector = new Vector<>();
+	public Vector<EnemyBullet> enemyBulletVector = new Vector<>();
+	public Vector<Boom> boomVector = new Vector<>();
+	public Vector<Prize> prizeVector = new Vector<>();
 	
 	public int enemyArrayIndex = 0;
-	private int createEnemyTime = 100;
 	private int createEnemyCount = 0;
 	private Random random;
 	
@@ -157,25 +147,33 @@ public class GameView extends SurfaceView
 	public Random rand = new Random();
 	
 	public int gameScore = 0;
-	public int life = 3;
 	public int level = 1;
 	
 	//触屏点与飞机的距离
 	private int dx = 0;
 	private int dy = 0;
 	
-	
-	public int enemyArrayData[][][] = {
-			{{4, 1, 1}, {4, 1}, {1, 2}, {4}, {4, 5}, {2, 3}, {5, 6}, {3, 3}, {5, 2, 2},
-			{4, 2}, {4, 3}, {1, 5},{4, 4}, {4, 6}, {4, 3}, {4, 4}, {4, 3}, {4, 5, 6},
-			{7}, {}, {}, {}, {4, 3}, {4, 5}, {4, 4}, {4, 6},  {3, 3}, {5, 2, 4},
-			{8}, {}, {}, {}, {1, 4}, {4, 3}, {1, 5}, {1, 4}, {1, 3}, {2, 3}, {4, 5}, 
-			{9}, {}, {}, {}, {3, 3}, {5, 2}, {1, 4}, {1, 3}, {1, 5},{1, 4}, {1, 7}, 
-			{4, 3}, {5, 7}, {3, 3}, {5, 1}},
+	//敌机的产生数组
+	public int enemyArrayData[][][] = 
+	{
+		{{4, 1, 1}, {4, 1}, {1, 2}, {4}, {4, 5}, {2, 3}, {5, 6}, {3, 3}, {5, 2, 2},
+		{4, 2}, {4, 3}, {1, 5},{4, 4}, {4, 6}, {4, 3}, {4, 4}, {4, 3}, {4, 5, 6},
+		{7}, {}, {}, {}, {4, 3}, {4, 5}, {4, 4}, {4, 6},  {3, 3}, {5, 2, 4},
+		{8}, {}, {}, {}, {1, 4}, {4, 3}, {1, 5}, {1, 4}, {1, 3}, {2, 3}, {4, 5}, 
+		{9}, {}, {}, {}, {3, 3}, {5, 2}, {1, 4}, {1, 3}, {1, 5},{1, 4}, {1, 7}, 
+		{4, 3}, {5, 7}, {3, 3}, {5, 1}, {-1}},
+		
+		{{4, 3, 2, 6}, {4, 1, 3}, {1, 2, 4, 8, 5}, {4, 2, 2, 1}, {4, 5, 3, 3}, {2, 6, 6, 3}, 
+		{5, 6, 1, 2}, {1, 2, 3, 3}, {4, 5, 2, 2}, {1, 3, 4, 2}, {2, 4, 4, 3}, {1, 5, 6},
+		{7}, {}, {}, {}, {4, 3, 6, 3}, {6, 6, 4, 5}, {6, 6, 6, 4, 4}, {1, 2, 4, 6},  {6, 2, 3, 3}, 
+		{5, 2, 4, 3}, {2, 6, 5, 4}, {3, 3, 3, 6}, {4, 2, 1, 6}, {5, 5, 5, 6, 1}, {2, 3, 1, 5, 5},
+		{8}, {}, {}, {}, {1, 6, 6, 4}, {6, 5, 4, 3}, {4, 1, 5}, {5, 1, 4}, {6, 2, 1, 3}, {2, 3, 6, 3}, 
+		{4, 5, 6, 2}, {3, 2, 5, 6}, {1, 4, 4, 4}, {2, 4, 5, 1}, {4, 1, 3, 6, 6}, {2, 1, 1, 4, 4},
+		{9}, {}, {}, {}, {7}, {4, 5, 6, 4}, {3, 3, 4}, {4, 5, 2}, {2, 1, 4}, {1, 4, 3}, {4, 1, 5}, {-1}},
 			
-			{{2}, {3}, {-1}},
-			
-			{{4}, {5}, {6}, {-1}}
+		{{7}, {}, {}, {}, {}, {8}, {}, {}, {}, {}, {5, 3, 1, 1}, {6, 4, 3, 2}, 
+		{9}, {}, {}, {}, {}, {4, 4, 3, 1}, {3, 2, 4, 6}, {4, 3, 5, 2}, {5, 5, 4, 4}, {3, 1, 4, 3}, {2, 4, 5, 6}, 
+		{8}, {}, {}, {}, {}, {4, 4, 3, 1}, {3, 2, 4, 6}, {4, 3, 5, 2}, {5, 5, 4, 4}, {3, 1, 4, 3}, {-1}}
 	};
 	public int enemyArray[][] = enemyArrayData[0];
 	
@@ -184,17 +182,21 @@ public class GameView extends SurfaceView
 	 * 在构造方法中初始化holder和paint,
 	 * 并给holder添加回调接口,用于管理SurfaceView
 	 */
-	public GameView(MainActivity activity)
+	public GameView(Context context)
 	{
-		super(activity);
-		this.activity = activity;
+		super(context);
+		mContext = context;
 		holder = getHolder();
 		holder.addCallback(new GameCallback());
 		paint = new Paint();
+		paint.setTextSize(30);
 		onTouch = new Object();
-		soundPool = SoundPoolUtil.getInstance(activity);
-		mediaPlayer = MediaPlayerUtil.getInstance(activity);
-		mediaPlayer.playLoop(R.raw.bg_stage1);
+		soundPool = SoundPoolUtil.getInstance(context);
+		mediaPlayer = MediaPlayerUtil.getInstance(context);
+		if (isPlayMusic)
+		{
+			mediaPlayer.playLoop(R.raw.bg_stage1);
+		}
 	}
 	
 	/**
@@ -204,7 +206,7 @@ public class GameView extends SurfaceView
 	{
 		width = getWidth();
 		height = getHeight();
-		res = getResources();
+		Resources res = getResources();
 		bmpBackGround = BitmapFactory.decodeResource(res, R.drawable.bg_gameing);
 		//玩家的飞机
 		bmpMyPlane = BitmapFactory.decodeResource(res, R.drawable.my_plane);
@@ -339,30 +341,6 @@ public class GameView extends SurfaceView
 		bmpEnemyBoomBig[23] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_explosion23);
 		//大型敌机的爆炸
 		bmpEnemyBoomBigN = new Bitmap[24];
-//		bmpEnemyBoomBigN[0] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion00);
-//		bmpEnemyBoomBigN[1] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion01);
-//		bmpEnemyBoomBigN[2] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion02);
-//		bmpEnemyBoomBigN[3] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion03);
-//		bmpEnemyBoomBigN[4] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion04);
-//		bmpEnemyBoomBigN[5] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion05);
-//		bmpEnemyBoomBigN[6] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion06);
-//		bmpEnemyBoomBigN[7] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion07);
-//		bmpEnemyBoomBigN[8] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion08);
-//		bmpEnemyBoomBigN[9] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion09);
-//		bmpEnemyBoomBigN[10] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion10);
-//		bmpEnemyBoomBigN[11] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion11);
-//		bmpEnemyBoomBigN[12] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion12);
-//		bmpEnemyBoomBigN[13] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion13);
-//		bmpEnemyBoomBigN[14] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion14);
-//		bmpEnemyBoomBigN[15] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion15);
-//		bmpEnemyBoomBigN[16] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion16);
-//		bmpEnemyBoomBigN[17] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion17);
-//		bmpEnemyBoomBigN[18] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion18);
-//		bmpEnemyBoomBigN[19] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion19);
-//		bmpEnemyBoomBigN[20] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion20);
-//		bmpEnemyBoomBigN[21] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion21);
-//		bmpEnemyBoomBigN[22] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion22);
-//		bmpEnemyBoomBigN[23] = BitmapFactory.decodeResource(res, R.drawable.enemy_big_n_explosion23);
 		//BOSS的图片
 		bmpBoss1 = BitmapFactory.decodeResource(res, R.drawable.boss_1);
 		bmpBoss2 = BitmapFactory.decodeResource(res, R.drawable.boss_2);
@@ -376,6 +354,7 @@ public class GameView extends SurfaceView
 		//游戏奖品的图片
 		bmpPrizeLight = BitmapFactory.decodeResource(res, R.drawable.prize_light);
 		bmpPrizeP = BitmapFactory.decodeResource(res, R.drawable.prize_p);
+		bmpPrizeB = BitmapFactory.decodeResource(res, R.drawable.prize_b);
 		bmpPrizeS = BitmapFactory.decodeResource(res, R.drawable.prize_s);
 		bmpPrizeF = BitmapFactory.decodeResource(res, R.drawable.prize_f);
 		bmpPrizeL = BitmapFactory.decodeResource(res, R.drawable.prize_l);
@@ -410,6 +389,8 @@ public class GameView extends SurfaceView
 			myPlane.draw(canvas, paint);	//画玩家飞机
 			
 			//Log.i("gameView", "bullet.size = " + bulletVector.size());
+			//final Vector<MyBullet> bullets = bulletVector;
+
 			synchronized (bulletVector)
 			{
 				for(MyBullet bullet : bulletVector)	//画子弹
@@ -417,8 +398,7 @@ public class GameView extends SurfaceView
 					bullet.draw(canvas, paint);
 				}
 			}
-			
-				
+
 			if (isBossLive)	//画BOSS
 			{
 				boss.draw(canvas, paint);
@@ -463,8 +443,8 @@ public class GameView extends SurfaceView
 			
 			//让文字在飞机的上面
 			paint.setColor(Color.YELLOW);
-			canvas.drawText("当前关数:" + this.level, 1, 15, paint);
-			canvas.drawText("游戏得分:" + this.gameScore, 1, 30, paint);
+			canvas.drawText("当前关数:" + this.level, 1, 50, paint);
+			canvas.drawText("游戏得分:" + this.gameScore, 1, 100, paint);
 			//canvas.drawText("生命条数:" + this.life, 1, 45, paint);
 			
 			holder.unlockCanvasAndPost(canvas);
@@ -533,22 +513,22 @@ public class GameView extends SurfaceView
 		if (!isBossLive)
 		{
 			createEnemyCount ++;
-			if (createEnemyCount >= createEnemyTime)
+			if (createEnemyCount >= 100)
 			{
 				int enemyTemp[] = enemyArray[enemyArrayIndex];
-				for (int i = 0; i < enemyTemp.length; i ++)
+				for (int enemy : enemyTemp)
 				{
-					if (enemyTemp[i] > 0 && enemyTemp[i] <= 6)
+					if (enemy > 0 && enemy <= 6)
 					{
 						int x = random.nextInt(width - 150) + 50;
-						EnemyPlane plane = new EnemyPlane(x, -20, enemyTemp[i], this);
+						EnemyPlane plane = new EnemyPlane(x, -20, enemy, this);
 						enemyPlaneVector.add(plane);
 					}
-					else if (enemyTemp[i] > 6)
+					else if (enemy > 6)
 					{
 						//如果是大飞机,则...
 						int x = random.nextInt(width - 250) + 50;
-						EnemyPlane plane = new EnemyPlane(x, -20, enemyTemp[i], this);
+						EnemyPlane plane = new EnemyPlane(x, -20, enemy, this);
 						enemyPlaneVector.add(plane);
 					}
 					

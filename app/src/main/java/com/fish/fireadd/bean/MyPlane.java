@@ -1,6 +1,5 @@
 package com.fish.fireadd.bean;
 
-import com.fish.fireadd.constant.Constant;
 import com.fish.fireadd.view.GameView;
 
 import android.graphics.Bitmap;
@@ -11,7 +10,6 @@ public class MyPlane extends Rect
 {
 
 	private int noCollisionCount = 0;	//无敌计时器
-	private int noCollisionTime = 50;	//因为无敌时间
 	public boolean unBeatable;
 	
 	public Bitmap bmpMyPlane;
@@ -19,7 +17,9 @@ public class MyPlane extends Rect
 	private GameView gameView;
 	
 	public MyPlaneShield shield;
-	public int myBulletType = 1;
+	public int myBulletType = 6;
+
+	public int mWidth, mHeight;
 	
 	public MyPlane(int x, int y, GameView gameView)
 	{
@@ -32,12 +32,14 @@ public class MyPlane extends Rect
 		this.live = true;
 		this.unBeatable = false;
 		this.shield = new MyPlaneShield(x, y, gameView);
+		this.mWidth = gameView.getWidth();
+		this.mHeight = gameView.getHeight();
 	}
 
 	/**
 	 * 画飞机
-	 * @param canvas
-	 * @param paint
+	 * @param canvas c
+	 * @param paint p
 	 */
 	public void draw(Canvas canvas, Paint paint)
 	{
@@ -45,7 +47,6 @@ public class MyPlane extends Rect
 		{
 			return;
 		}
-		
 		
 		if (unBeatable)
 		{
@@ -115,17 +116,17 @@ public class MyPlane extends Rect
 		{
 			this.x = 0;
 		}
-		if (this.y < 10)
+		if (this.y < 0)
 		{
-			this.y = 10;
+			this.y = 0;
 		}
-		if (this.x + this.width > Constant.WIDTH)
+		if (this.x + this.width > mWidth)
 		{
-			this.x = Constant.WIDTH - this.width;
+			this.x = mWidth - this.width;
 		}
-		if (this.y + this.height > gameView.height)
+		if (this.y + this.height > mHeight)
 		{
-			this.y = gameView.height - this.height;
+			this.y = mHeight - this.height;
 		}
 		
 		if (shield != null)
@@ -179,14 +180,6 @@ public class MyPlane extends Rect
 	}
 	
 	/**
-	 * 被放弃的方法
-	 */
-	public void hitEnemyBullet()
-	{
-		
-	}
-	
-	/**
 	 * 碰撞之后的逻辑处理
 	 */
 	public void doLogic()
@@ -194,7 +187,7 @@ public class MyPlane extends Rect
 		if (unBeatable)
 		{
 			noCollisionCount ++;
-			if (noCollisionCount >= noCollisionTime)
+			if (noCollisionCount >= 50)	//50次内无敌
 			{
 				unBeatable = false;
 				noCollisionCount = 0;

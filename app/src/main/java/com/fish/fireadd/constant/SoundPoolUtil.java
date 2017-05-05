@@ -6,7 +6,6 @@ import java.util.Map;
 import com.fish.fireadd.activity.R;
 
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.SoundPool;
 
 public class SoundPoolUtil
@@ -24,12 +23,12 @@ public class SoundPoolUtil
 	/**
 	 * 在私有构造方法中初始化数据，
 	 * 以便于使用时已经加载过
-	 * @param context
+	 * @param context this
 	 */
 	private SoundPoolUtil(Context context)
 	{
 		this.context = context;
-		this.soundMap = new HashMap<Sound, Integer>();
+		this.soundMap = new HashMap<>();
 		soundMap.put(Sound.myPlaneBoom, R.raw.boom_my_plane);
 		soundMap.put(Sound.enemyPlaneBoom, R.raw.boom_enemy_plane);
 		soundMap.put(Sound.rockBoom, R.raw.boom_rock);
@@ -41,15 +40,16 @@ public class SoundPoolUtil
 		soundMap.put(Sound.powerUp, R.raw.power_up);
 		this.soundPlayedIds = new int[soundMap.size()];
 		this.streamIds = new int[soundMap.size()];
-		this.soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 100);
+		this.soundPool = new SoundPool.Builder().setMaxStreams(5).build();
+				//new SoundPool(10, AudioManager.STREAM_MUSIC, 100);
 		this.soundOn = true;
 		this.load();
 	}
 	
 	/**
 	 * 取得SoundPoolUtil的实例
-	 * @param context
-	 * @return
+	 * @param context c
+	 * @return this
 	 */
 	public static SoundPoolUtil getInstance(Context context)
 	{
@@ -76,7 +76,7 @@ public class SoundPoolUtil
 	
 	/**
 	 * 播放对应资源的声音
-	 * @param sound
+	 * @param sound s
 	 */
 	public void play(Sound sound)
 	{
@@ -92,7 +92,6 @@ public class SoundPoolUtil
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return;
 		}
 	}
 	

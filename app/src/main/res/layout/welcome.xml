@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:background="@drawable/bg_welcome">
+
+    <Button
+        android:id="@+id/start"
+        android:layout_marginTop="150dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="start"
+        android:background="@drawable/bt_game_start"/>
+
+    <Button
+        android:id="@+id/help"
+        android:layout_below="@id/start"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="help"
+        android:background="@drawable/bt_game_help"/>
+
+    <Button
+        android:id="@+id/about"
+        android:layout_below="@id/help"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="about"
+        android:background="@drawable/bt_game_about"/>
+
+    <Button
+        android:id="@+id/exit"
+        android:layout_below="@id/about"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="exit"
+        android:background="@drawable/bt_game_exit"/>
+
+</RelativeLayout>

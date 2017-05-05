@@ -172,11 +172,11 @@ public class EnemyPlane extends Rect
 	public void doLogic()
 	{
 		this.move();
-		if (this.y > 800 || this.x < 0 || this.x > 480)
+		if (this.y > gameView.getHeight() || this.x < 0 || this.x > gameView.getWidth())
 		{
 			this.live = false;
 		}
-		if (rand.nextInt(100) > 96)
+		if (rand.nextInt(100) > 90)
 		{
 			this.fire();
 		}
@@ -191,9 +191,9 @@ public class EnemyPlane extends Rect
 			{
 				boom = new Boom(x + width / 2 - 40, y + height / 2 - 40, Boom.TYPE_BOOM_ENEMY_PLANE, gameView);
 				//有一定机率产生奖品
-				if (rand.nextInt(100) > 50)
+				if (rand.nextInt(100) > 40)
 				{
-					Prize prize = new Prize(x + width / 2 - 15, y + height / 2 - 15, rand.nextInt(5) + 2, gameView);
+					Prize prize = new Prize(x + width / 2 - 15, y + height / 2 - 15, rand.nextInt(6) + 1, gameView);
 					gameView.prizeVector.add(prize);
 				}
 				//播放小飞机爆炸的声音
@@ -205,7 +205,7 @@ public class EnemyPlane extends Rect
 				//大飞机产生奖品的机率更大
 				if (rand.nextInt(100) > 10)
 				{
-					Prize prize = new Prize(x + width / 2 - 15, y + height / 2 - 15, rand.nextInt(5) + 2, gameView);
+					Prize prize = new Prize(x + width / 2 - 15, y + height / 2 - 15, rand.nextInt(6) + 1, gameView);
 					gameView.prizeVector.add(prize);
 				}
 				//播放大飞机爆炸的声音
