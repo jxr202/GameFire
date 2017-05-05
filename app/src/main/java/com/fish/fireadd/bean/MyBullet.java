@@ -69,10 +69,29 @@ public class MyBullet extends Rect
 	
 	/**
 	 * 玩家子弹和敌机碰撞的处理
-	 * 1.如果子弹和飞机都是活的，才会碰撞
+	 * 1.如果BOSS是活动的，检测与BOSS的碰撞
+	 * 2.如果子弹和飞机都是活的，才会碰撞
 	 */
 	public void hitEnemyPlane()
 	{
+		if (gameView.isBossLive)
+		{
+			//只有在击中BOSS的头才有效
+			Rect rect = new Rect(gameView.boss.x + 56, gameView.boss.y + 170);
+			rect.width = 150;
+			rect.height = 22;
+			if (this.live && this.hitOtherRect(rect))
+			{
+				this.live = false;
+				gameView.boss.lifeValue --;
+				//产生爆炸
+				Boom boom = new Boom(this.x - 11, this.y - 11, Boom.TYPE_BOOM_MY_PLANE_SHIELD, gameView);
+				gameView.boomVector.add(boom);
+				
+				return;
+			}
+			
+		}
 		for (EnemyPlane plane : gameView.enemyPlaneVector)
 		{
 			if (plane.live && this.live && this.hitOtherRect(plane))

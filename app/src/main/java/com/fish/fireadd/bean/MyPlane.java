@@ -70,7 +70,7 @@ public class MyPlane extends Rect
 	 */
 	public void move(int pointX, int pointY)
 	{
-		if (pointX - this.x <= 2)
+		if (pointX - this.x <= -2)
 		{
 			if (unBeatable)
 			{
@@ -136,8 +136,11 @@ public class MyPlane extends Rect
 	 */
 	public void fire()
 	{
-		MyBullet bullet = new MyBullet(this.x + width / 2 - gameView.bmpMyBulletBasic.getWidth() / 2, this.y, myBulletType, gameView);
-		gameView.bulletVector.add(bullet);
+		if (this.live)
+		{
+			MyBullet bullet = new MyBullet(this.x + width / 2 - gameView.bmpMyBulletBasic.getWidth() / 2, this.y, myBulletType, gameView);
+			gameView.bulletVector.add(bullet);
+		}
 	}
 	
 	/**

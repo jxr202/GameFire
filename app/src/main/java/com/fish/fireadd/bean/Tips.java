@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import com.fish.fireadd.constant.Constant;
 import com.fish.fireadd.view.GameView;
 
 public class Tips extends Rect
@@ -11,6 +12,8 @@ public class Tips extends Rect
 	//游戏的提示类型，1为游戏开始，2为游戏结束
 	public static final int TIPS_START = 1;
 	public static final int TIPS_END = 2;
+	public static final int TIPS_PASS = 3;
+	public static final int TIPS_PASS_ALL = 4;
 	
 	private int tipsType;	//提示类型
 	private Bitmap bmpTips;	//提示的图片
@@ -32,6 +35,14 @@ public class Tips extends Rect
 			break;
 		case TIPS_END:
 			bmpTips = gameView.bmpTips[1];
+			speed = 30;
+			break;
+		case TIPS_PASS:
+			bmpTips = gameView.bmpTips[2];
+			speed = 30;
+			break;
+		case TIPS_PASS_ALL:
+			bmpTips = gameView.bmpTips[3];
 			speed = 30;
 			break;
 		}
@@ -86,8 +97,24 @@ public class Tips extends Rect
 			{
 				//游戏真正的结束
 				gameView.gameOver = true;
+				gameView.activity.hd.sendEmptyMessage(Constant.GAME_OVER);
 			}
-
+		}
+		else if(tipsType == TIPS_PASS)
+		{
+			if (this.speed < 0 && this.y < -50)
+			{
+				this.live = false;
+			}
+		}
+		else if(tipsType == TIPS_PASS_ALL)
+		{
+			if (this.speed < 0 && this.y < -50)
+			{
+				//游戏通过所有关卡
+				gameView.gameOver = true;
+				gameView.activity.hd.sendEmptyMessage(Constant.GAME_PASS_ALL);
+			}
 		}
 
 	}

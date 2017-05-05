@@ -22,7 +22,8 @@ public class Constant
 	public static final int GAME_HELP = 2;
 	public static final int GAME_ABOUT = 3;
 	public static final int GAME_EXIT = 4;
+
+	public static final int GAME_PASS_ALL = 9;
 	public static final int GAME_OVER = -1;
-	public static final int GAME_PASS = 9;
 	
 }

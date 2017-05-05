@@ -6,6 +6,7 @@ import java.util.Vector;
 import com.fish.fireadd.activity.MainActivity;
 import com.fish.fireadd.activity.R;
 import com.fish.fireadd.bean.BackGround;
+import com.fish.fireadd.bean.Boss;
 import com.fish.fireadd.bean.EnemyBullet;
 import com.fish.fireadd.bean.EnemyPlane;
 import com.fish.fireadd.bean.MyBullet;
@@ -38,7 +39,7 @@ public class GameView extends SurfaceView
 	private long sleepTime = 50; 
 	private int step = 0;
 	
-	private MainActivity activity;
+	public MainActivity activity;
 	private SurfaceHolder holder;	//GameView是通过holder来控制View的
 	private Paint paint;
 	
@@ -114,12 +115,11 @@ public class GameView extends SurfaceView
 	public Bitmap bmpTips[];
 	
 	public boolean gameOver = false;	//线程开关
-	private boolean isBossLive = false;	//创建敌机开关
-	//TODO 
+	public boolean isBossLive = false;	//创建敌机开关
 	
 	public BackGround backGround;
 	public MyPlane myPlane;
-	//public BossOld boss;
+	public Boss boss;
 	public Tips tips;
 	
 	public Vector<MyBullet> bulletVector = new Vector<MyBullet>();
@@ -127,15 +127,15 @@ public class GameView extends SurfaceView
 	public Vector<EnemyBullet> enemyBulletVector = new Vector<EnemyBullet>();
 	public Vector<Boom> boomVector = new Vector<Boom>();	
 	
+//	private int enemyArray[][] = {
+//			{4, 7, 4, 2, 1, 2, 1, 1}, {8, 2, 1, 2, 4, 2, 4, 1}, {4, 9, 1, 2, 1, 4, 1, 4},{8, 4}, {4, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
+//			{4, 2}, {4, 3}, {1, 5},{4, 4}, {4, 7}, {4, 3}, {4, 7}, {4, 3}, {8, 7, 9},
+//			{4, 2}, {4, 3}, {4, 5},{4, 4}, {4, 7}, {8, 3}, {5, 7}, {3, 3}, {5, 7, 9},
+//			{1, 4}, {4, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {4, 7}, {3, 3}, {5, 7, 9},
+//			{1, 4}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {4, 3}, {5, 7}, {3, 3}, {5, 7, 9}
+//	};
 	
-	private int enemyArray[][] = {
-			{4, 7, 4, 2, 1, 2, 1, 1}, {8, 2, 1, 2, 4, 2, 4, 1}, {4, 9, 1, 2, 1, 4, 1, 4},{8, 4}, {4, 7}, {2, 3}, {5, 7}, {3, 3}, {5, 7, 9},
-			{4, 2}, {4, 3}, {1, 5},{4, 4}, {4, 7}, {4, 3}, {4, 7}, {4, 3}, {8, 7, 9},
-			{4, 2}, {4, 3}, {4, 5},{4, 4}, {4, 7}, {8, 3}, {5, 7}, {3, 3}, {5, 7, 9},
-			{1, 4}, {4, 3}, {1, 5},{1, 4}, {1, 7}, {2, 3}, {4, 7}, {3, 3}, {5, 7, 9},
-			{1, 4}, {1, 3}, {1, 5},{1, 4}, {1, 7}, {4, 3}, {5, 7}, {3, 3}, {5, 7, 9}
-	};
-	private int enemyArrayIndex = 0;
+	public int enemyArrayIndex = 0;
 	private int createEnemyTime = 150;
 	private int createEnemyCount = 0;
 	private Random random;
@@ -151,6 +151,13 @@ public class GameView extends SurfaceView
 	private int dx = 0;
 	private int dy = 0;
 	
+	
+	public int enemyArrayData[][][] = {
+			{{1}, {-1}},
+			{{2}, {3}, {-1}},
+			{{4}, {5}, {6}, {-1}}
+	};
+	public int enemyArray[][] = enemyArrayData[0];
 	
 	
 	/**
@@ -336,9 +343,11 @@ public class GameView extends SurfaceView
 		bmpBoss2 = BitmapFactory.decodeResource(res, R.drawable.boss_2);
 		bmpBoss3 = BitmapFactory.decodeResource(res, R.drawable.boss_3);
 		
-		bmpTips = new Bitmap[2];
-		bmpTips[0] = BitmapFactory.decodeResource(res, R.drawable.game_start);
-		bmpTips[1] = BitmapFactory.decodeResource(res, R.drawable.game_over);
+		bmpTips = new Bitmap[4];
+		bmpTips[0] = BitmapFactory.decodeResource(res, R.drawable.tips_game_start);
+		bmpTips[1] = BitmapFactory.decodeResource(res, R.drawable.tips_game_over);
+		bmpTips[2] = BitmapFactory.decodeResource(res, R.drawable.tips_game_pass);
+		bmpTips[3] = BitmapFactory.decodeResource(res, R.drawable.tips_game_pass_all);
 		
 		random = new Random();
 		myPlane = new MyPlane(240, 600, this);
@@ -366,7 +375,6 @@ public class GameView extends SurfaceView
 		if (canvas != null)
 		{
 			backGround.draw(canvas, paint);	//画背景
-			
 			myPlane.draw(canvas, paint);	//画玩家飞机
 			
 			//Log.i("gameView", "bullet.size = " + bulletVector.size());
@@ -379,16 +387,16 @@ public class GameView extends SurfaceView
 			}
 			
 				
-//			if (this.isBossLive)	//画BOSS
-//			{
-//				boss.draw(canvas, paint);
-//				paint.setColor(Color.YELLOW);
-//				canvas.drawText("Boss血量:" + boss.leftValue + "/1000", 200, 15, paint);
-//				paint.setColor(Color.RED);
-//				canvas.drawRect(200, 20, 200 + boss.leftValue / 5, 35, paint);
-//			}
+			if (isBossLive)	//画BOSS
+			{
+				boss.draw(canvas, paint);
+				paint.setColor(Color.YELLOW);
+				canvas.drawText("Boss血量:" + boss.lifeValue + "/100", 200, 15, paint);
+				paint.setColor(Color.RED);
+				canvas.drawRect(200, 20, 200 + boss.lifeValue * 2, 35, paint);
+			}
 			
-			Log.i("gameView", "enemyPlane.size = " + enemyPlaneVector.size());
+			//Log.i("gameView", "enemyPlane.size = " + enemyPlaneVector.size());
 			for(EnemyPlane plane : enemyPlaneVector)	//画敌人飞机
 			{
 				plane.draw(canvas, paint);
@@ -446,6 +454,12 @@ public class GameView extends SurfaceView
 		//爆炸的逻辑处理
 		this.doRectLogic(boomVector);
 		
+		//Boss的逻辑处理
+		if (isBossLive)
+		{
+			boss.doLogic();
+		}
+		
 	}
 	
 	
@@ -482,22 +496,26 @@ public class GameView extends SurfaceView
 				int enemyTemp[] = enemyArray[enemyArrayIndex];
 				for (int i = 0; i < enemyTemp.length; i ++)
 				{
-					int x;
-					if (enemyTemp[i] <= 6)
+					if (enemyTemp[i] > 0 && enemyTemp[i] <= 6)
 					{
-						x = random.nextInt(width - 150) + 50;
+						int x = random.nextInt(width - 150) + 50;
+						EnemyPlane plane = new EnemyPlane(x, -20, enemyTemp[i], this);
+						enemyPlaneVector.add(plane);
 					}
-					else
+					else if (enemyTemp[i] > 6)
 					{
 						//如果是大飞机,则...
-						x = random.nextInt(width - 250) + 50;
+						int x = random.nextInt(width - 250) + 50;
+						EnemyPlane plane = new EnemyPlane(x, -20, enemyTemp[i], this);
+						enemyPlaneVector.add(plane);
 					}
-					EnemyPlane plane = new EnemyPlane(x, -20, enemyTemp[i], this);
-					enemyPlaneVector.add(plane);
+					
 				}
 				
 				if (enemyArrayIndex == enemyArray.length - 1)
 				{
+					//BOSS的类型是10，11，12
+					boss = new Boss(width / 2 - 100, 0, this.level + 9, this);
 					isBossLive = true;
 				}
 				else 
@@ -529,15 +547,6 @@ public class GameView extends SurfaceView
 	}
 	
 	/**
-	 *	玩家通过了最后一关
-	 */
-	public void passAllGame()
-	{
-		gameOver = true;
-		activity.hd.sendEmptyMessage(Constant.GAME_PASS);
-	}
-	
-	/**
 	 *	GAME OVER
 	 */
 	public void gameOver()
@@ -549,6 +558,30 @@ public class GameView extends SurfaceView
 		
 		//activity.hd.sendEmptyMessage(Constant.GAME_OVER);
 	}
+	
+	/**
+	 *	GAME PASS
+	 */
+	public void gamePass()
+	{
+		Log.i("GameView", "GAME PASS.....");
+		//如果没有提示时才提示进入下一关，不然玩家飞机爆掉之后又进入下一关
+		if (!tips.live)
+		{
+			tips = new Tips(width / 2 - 243, -10, Tips.TIPS_PASS, this);
+		}
+	}
+	
+	/**
+	 *	GAME PASS ALL
+	 */
+	public void gamePassAll()
+	{
+		Log.i("GameView", "GAME OVER ALL.....");
+		//进入下一关
+		tips = new Tips(width / 2 - 243, -10, Tips.TIPS_PASS_ALL, this);
+	}
+	
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event)

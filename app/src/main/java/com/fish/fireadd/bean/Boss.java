@@ -103,14 +103,29 @@ public class Boss extends Rect
 		EnemyBullet bullet= new EnemyBullet(x + width / 2 - 10, 190, bossType, gameView);
 		gameView.enemyBulletVector.add(bullet);
 	}
-
+	
 	/**
 	 * BOSS的逻辑处理
 	 */
 	public void doLogic()
 	{
+		if (this.lifeValue <= 0)
+		{
+			gameView.enemyArrayIndex = 0;	//重新开始读数据
+			gameView.isBossLive = false;	//BOSS死掉
+			gameView.level ++;				//等级加1
+			if (gameView.level > 3)
+			{
+				//游戏通过
+				gameView.gamePassAll();
+				return;
+			}
+			gameView.gamePass();
+			gameView.enemyArray = gameView.enemyArrayData[gameView.level - 1];
+			return;
+		}
 		this.move();
-		if (rand.nextInt(100) > 80)
+		if (rand.nextInt(100) > 99)
 		{
 			this.fire();
 		}
