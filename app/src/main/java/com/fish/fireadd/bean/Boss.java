@@ -2,7 +2,9 @@ package com.fish.fireadd.bean;
 
 import java.util.Random;
 
+import com.fish.fireadd.activity.R;
 import com.fish.fireadd.constant.Constant;
+import com.fish.fireadd.constant.Sound;
 import com.fish.fireadd.view.GameView;
 
 import android.graphics.Bitmap;
@@ -50,6 +52,7 @@ public class Boss extends Rect
 		this.lifeValue = 100;
 		this.speed = 4;
 		this.live = true;
+		gameView.mediaPlayer.playLoop(R.raw.bg_boss);
 	}
 	
 	/**
@@ -113,6 +116,9 @@ public class Boss extends Rect
 		{
 			gameView.enemyArrayIndex = 0;	//重新开始读数据
 			gameView.isBossLive = false;	//BOSS死掉
+			//播放声音
+			gameView.soundPool.play(Sound.bossBoom);
+			
 			gameView.level ++;				//等级加1
 			if (gameView.level > 3)
 			{

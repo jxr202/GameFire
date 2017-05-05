@@ -3,6 +3,8 @@ package com.fish.fireadd.view;
 import com.fish.fireadd.activity.MainActivity;
 import com.fish.fireadd.activity.R;
 import com.fish.fireadd.constant.Constant;
+import com.fish.fireadd.constant.Sound;
+import com.fish.fireadd.constant.SoundPoolUtil;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +22,7 @@ public class WelcomeView extends SurfaceView implements Callback
 	private SurfaceHolder holder;
 	private MainActivity activity;
 	private Paint paint;
+	private SoundPoolUtil soundPool;
 
 	private Bitmap backGround;
 	private Bitmap startButton;
@@ -46,6 +49,8 @@ public class WelcomeView extends SurfaceView implements Callback
 		paint = new Paint(); // 创建画笔
 		paint.setAntiAlias(true); // 打开抗锯齿
 
+		soundPool = SoundPoolUtil.getInstance(activity);//初始化声音播放工具类
+		
 		initPicButton();// 加载图片
 		initXY(); // 初始化坐标
 	}
@@ -97,13 +102,15 @@ public class WelcomeView extends SurfaceView implements Callback
 		// System.out.println(loginY + "|" + helpY + "|" + aboutY + "|" +
 
 		if (e.getAction() == MotionEvent.ACTION_UP)
-		{
+		{			
 			if (x > startX && x < startX + imgWidth)
 			{
 				if (y > startY && y < startY + imgHeight)
 				{
 					startButton = gameStartDown;
 					this.repaint();
+					//播放点击的音乐
+					soundPool.play(Sound.powerUp);
 					try
 					{
 						Thread.sleep(200);
@@ -118,6 +125,8 @@ public class WelcomeView extends SurfaceView implements Callback
 				{
 					helpButton = gameHelpDown;
 					this.repaint();
+					//播放点击的音乐
+					soundPool.play(Sound.powerUp);
 					try
 					{
 						Thread.sleep(200);
@@ -132,6 +141,8 @@ public class WelcomeView extends SurfaceView implements Callback
 				{
 					aboutButton = gameAboutDown;
 					this.repaint();
+					//播放点击的音乐
+					soundPool.play(Sound.powerUp);
 					try
 					{
 						Thread.sleep(200);
@@ -146,6 +157,8 @@ public class WelcomeView extends SurfaceView implements Callback
 				{
 					exitButton = gameExitDown;
 					this.repaint();
+					//播放点击的音乐
+					soundPool.play(Sound.powerUp);
 					try
 					{
 						Thread.sleep(200);

@@ -3,14 +3,16 @@ package com.fish.fireadd.activity;
 import com.fish.fireadd.view.FlashView;
 import com.fish.fireadd.view.GameView;
 import com.fish.fireadd.view.WelcomeView;
-import com.fish.fireadd.constant.AudioUtil;
 import com.fish.fireadd.constant.Constant;
+import com.fish.fireadd.constant.MediaPlayerUtil;
+import com.fish.fireadd.constant.Sound;
+import com.fish.fireadd.constant.SoundPoolUtil;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
-import android.media.MediaPlayer;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,7 +21,10 @@ import android.view.Window;
 
 public class MainActivity extends Activity
 {
-	private MediaPlayer media;
+	
+	public SoundPoolUtil soundPool;
+	public MediaPlayerUtil mediaPlayer;
+	
 	
 	public Handler hd = new Handler()
 	{
@@ -60,6 +65,13 @@ public class MainActivity extends Activity
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		
+		//初始化SoundPoolUtil并加载资源
+		soundPool = SoundPoolUtil.getInstance(this);
+		//初始化MediaPlayerUtil
+		mediaPlayer = MediaPlayerUtil.getInstance(this);
+		//设置当前调整音量大小只是针对媒体音乐进行调整
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		
 		goToFlashView();
 	}
 	
@@ -72,7 +84,7 @@ public class MainActivity extends Activity
 		FlashView flashView = new FlashView(this);
 		setContentView(flashView);
 		//一进来就播放音乐
-		media = AudioUtil.PlayMusicLoop(this, R.raw.powerup);
+		soundPool.play(Sound.flash);
 	}
 
 	/**
@@ -83,8 +95,7 @@ public class MainActivity extends Activity
 		WelcomeView wel = new WelcomeView(this);
 		setContentView(wel);
 		//播放音乐
-		media.stop();
-		media = AudioUtil.PlayMusicLoop(this, R.raw.bg_welcome);
+		mediaPlayer.playLoop(R.raw.bg_welcome);
 	}
 
 	/**
@@ -134,6 +145,9 @@ public class MainActivity extends Activity
 	 */
 	private void goToPassView()
 	{
+		//播放背景音乐
+		mediaPlayer.playLoop(R.raw.bg_welcome);
+		
 		setContentView(R.layout.game_pass);
 		View v = findViewById(R.id.ll_bg);
 		v.setOnClickListener(new View.OnClickListener()
@@ -165,6 +179,9 @@ public class MainActivity extends Activity
 	 */
 	private void goToFailView()
 	{
+		//播放背景音乐
+		mediaPlayer.playLoop(R.raw.bg_welcome);
+		
 		setContentView(R.layout.game_over);
 		View v = findViewById(R.id.ll_bg);
 		v.setOnClickListener(new View.OnClickListener()

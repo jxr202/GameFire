@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import com.fish.fireadd.constant.Sound;
 import com.fish.fireadd.view.GameView;
 
 public class EnemyPlane extends Rect
@@ -189,10 +190,14 @@ public class EnemyPlane extends Rect
 			if (this.enemyType <= 6)
 			{
 				boom = new Boom(x + width / 2 - 40, y + height / 2 - 40, Boom.TYPE_BOOM_ENEMY_PLANE, gameView);
+				//播放小飞机爆炸的声音
+				gameView.soundPool.play(Sound.enemyPlaneBoom);
 			}
 			else 
 			{
 				boom = new Boom(x + width / 2 - 150, y + height / 2 - 158, Boom.TYPE_BOOM_ENEMY_PLANE_BIG, gameView);
+				//播放大飞机爆炸的声音
+				gameView.soundPool.play(Sound.rockBoom);
 			}
 			gameView.boomVector.add(boom);
 			//玩家加分

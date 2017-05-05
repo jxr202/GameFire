@@ -15,6 +15,8 @@ import com.fish.fireadd.bean.Boom;
 import com.fish.fireadd.bean.Rect;
 import com.fish.fireadd.bean.Tips;
 import com.fish.fireadd.constant.Constant;
+import com.fish.fireadd.constant.MediaPlayerUtil;
+import com.fish.fireadd.constant.SoundPoolUtil;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -39,6 +41,8 @@ public class GameView extends SurfaceView
 	private long sleepTime = 50; 
 	private int step = 0;
 	
+	public SoundPoolUtil soundPool;	//声音播放类
+	public MediaPlayerUtil mediaPlayer;	//声音播放类
 	public MainActivity activity;
 	private SurfaceHolder holder;	//GameView是通过holder来控制View的
 	private Paint paint;
@@ -172,6 +176,9 @@ public class GameView extends SurfaceView
 		holder.addCallback(new GameCallback());
 		paint = new Paint();
 		onTouch = new Object();
+		soundPool = SoundPoolUtil.getInstance(activity);
+		mediaPlayer = MediaPlayerUtil.getInstance(activity);
+		mediaPlayer.playLoop(R.raw.bg_stage1);
 	}
 	
 	/**
@@ -569,6 +576,14 @@ public class GameView extends SurfaceView
 		if (!tips.live)
 		{
 			tips = new Tips(width / 2 - 243, -10, Tips.TIPS_PASS, this);
+		}
+		if (level == 2)
+		{
+			mediaPlayer.playLoop(R.raw.bg_stage1);
+		}
+		else if (level == 3)
+		{
+			mediaPlayer.playLoop(R.raw.bg_stage3);
 		}
 	}
 	

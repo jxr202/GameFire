@@ -1,5 +1,6 @@
 package com.fish.fireadd.bean;
 
+import com.fish.fireadd.constant.Sound;
 import com.fish.fireadd.view.GameView;
 
 import android.graphics.Bitmap;
@@ -50,6 +51,8 @@ public class MyBullet extends Rect
 		this.width = bmpMyBullet.getWidth();
 		this.height = bmpMyBullet.getHeight();
 		this.live = true;
+		//子弹创建时播放声音
+		gameView.soundPool.play(Sound.shot);
 	}
 	
 	/**
@@ -88,6 +91,8 @@ public class MyBullet extends Rect
 				Boom boom = new Boom(this.x - 11, this.y - 11, Boom.TYPE_BOOM_MY_PLANE_SHIELD, gameView);
 				gameView.boomVector.add(boom);
 				
+				//播放声音
+				gameView.soundPool.play(Sound.hit);
 				return;
 			}
 			

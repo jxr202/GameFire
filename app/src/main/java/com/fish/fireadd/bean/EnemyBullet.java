@@ -1,6 +1,7 @@
 package com.fish.fireadd.bean;
 
 import com.fish.fireadd.constant.Constant;
+import com.fish.fireadd.constant.Sound;
 import com.fish.fireadd.view.GameView;
 
 import android.graphics.Bitmap;
@@ -136,6 +137,9 @@ public class EnemyBullet extends Rect
 				//罩子产生爆炸
 				Boom shieldBoom = new Boom(x, y, Boom.TYPE_BOOM_MY_PLANE_SHIELD, gameView);
 				gameView.boomVector.add(shieldBoom);
+				
+				//播放声音
+				gameView.soundPool.play(Sound.hit);
 				return;
 			}	
 		}
@@ -152,6 +156,8 @@ public class EnemyBullet extends Rect
 				//玩家飞机的爆炸
 				Boom planeBoom = new Boom(plane.x - 35, plane.y - 35, Boom.TYPE_BOOM_MY_PLANE, gameView);
 				gameView.boomVector.add(planeBoom);
+				//播放声音
+				gameView.soundPool.play(Sound.myPlaneBoom);
 				
 				//游戏结束
 				gameView.gameOver();
