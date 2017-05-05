@@ -113,8 +113,9 @@ public class GameView extends SurfaceView
 	//游戏开始和结束的提示
 	public Bitmap bmpTips[];
 	
-	public boolean gameOver = false;
-	private boolean isBossLive = false;
+	public boolean gameOver = false;	//线程开关
+	private boolean isBossLive = false;	//创建敌机开关
+	//TODO 
 	
 	public BackGround backGround;
 	public MyPlane myPlane;
@@ -433,12 +434,11 @@ public class GameView extends SurfaceView
 		myPlane.doLogic();
 		//提示的逻辑处理
 		tips.doLogic();
-		
-		//子弹出界的逻辑处理
+		//玩家子弹出界的逻辑处理
 		this.doRectLogic(bulletVector);
+		
 		//敌机产生的逻辑处理
 		this.createEnemy();
-		
 		//敌机出界的逻辑处理
 		this.doRectLogic(enemyPlaneVector);
 		//敌人子弹出界的逻辑处理
@@ -474,27 +474,40 @@ public class GameView extends SurfaceView
 	 */
 	public void createEnemy()
 	{
-		createEnemyCount ++;
-		if (createEnemyCount >= createEnemyTime)
+		if (!isBossLive)
 		{
-			int enemyTemp[] = enemyArray[enemyArrayIndex];
-			for (int i = 0; i < enemyTemp.length; i ++)
+			createEnemyCount ++;
+			if (createEnemyCount >= createEnemyTime)
 			{
-				int x;
-				if (enemyTemp[i] <= 6)
+				int enemyTemp[] = enemyArray[enemyArrayIndex];
+				for (int i = 0; i < enemyTemp.length; i ++)
 				{
-					x = random.nextInt(width - 150) + 50;
+					int x;
+					if (enemyTemp[i] <= 6)
+					{
+						x = random.nextInt(width - 150) + 50;
+					}
+					else
+					{
+						//如果是大飞机,则...
+						x = random.nextInt(width - 250) + 50;
+					}
+					EnemyPlane plane = new EnemyPlane(x, -20, enemyTemp[i], this);
+					enemyPlaneVector.add(plane);
 				}
-				else
+				
+				if (enemyArrayIndex == enemyArray.length - 1)
 				{
-					//如果是大飞机,则...
-					x = random.nextInt(width - 250) + 50;
+					isBossLive = true;
 				}
-				EnemyPlane plane = new EnemyPlane(x, -20, enemyTemp[i], this);
-				enemyPlaneVector.add(plane);
+				else 
+				{
+					enemyArrayIndex ++;
+				}
+				
+				createEnemyCount = 0;
 			}
-			createEnemyCount = 0;
-			enemyArrayIndex ++;
+
 		}
 	}
 	
